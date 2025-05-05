@@ -1,0 +1,168 @@
+const bcrypt = require('bcryptjs')
+const adminModel = require("../model/adminModel");
+const { tokenGenerate } = require('../helping')
+
+class adminController {
+
+    // create admin part
+    async createAdmin(data) {
+        try {
+            const newAdmin = new adminModel({
+                ...data,
+                password: await bcrypt.hash(data.password, 10)
+            })
+            await newAdmin.save()
+            return {
+                msg: 'Admin created',
+                status: 1
+            }
+        } catch (error) {
+            console.log(error);
+
+            return {
+                msg: 'Internal server error',
+                status: 0
+            }
+        }
+    }
+
+    // read admin part
+    readAdmin(query) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    let findAdmin;
+                    if (query.id) {
+                        findAdmin = await adminModel.findById(query.id);
+                        if (findAdmin) {
+                            resolve({
+                                msg: 'user found',
+                                status: 1,
+                                admin: findAdmin
+                            })
+                        } else {
+                            reject({
+                                msg: 'user not found',
+                                status: 0
+                            })
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+
+    // admin login chack part
+    async loginAdmin(data) {
+        try {
+            const admin = await adminModel.findOne({ email: data.email });
+            if (admin) {
+                const passwordMatch = await bcrypt.compare(data.password, admin.password);
+                if (passwordMatch) {
+                    return {
+                        msg: 'login successfully',
+                        status: 1,
+                        admin: { ...admin.toJSON(), password: null },
+                        adminToken: tokenGenerate(admin.toJSON())
+                    }
+                } else {
+                    return {
+                        msg: 'Please enter vaild password',
+                        status: 0
+                    }
+                }
+            } else {
+                return {
+                    msg: 'Please enter vaild email',
+                    status: 0
+                }
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            return {
+                msg: 'Internal server error',
+                status: 0
+            }
+        }
+    }
+
+    //  admin update part
+    editAdmin(data, file, id) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    if (file) {
+                        await adminModel.updateOne(
+                            {
+                                _id: id
+                            },
+                            {
+                                $set: {
+                                    ...data,
+                                    profile_Photo: file.path
+                                }
+                            }
+                        ).then(
+                            async () => {
+                                const admin = await adminModel.findById(id)
+                                resolve({
+                                    msg: 'admin updated',
+                                    status: 1,
+                                    admin: admin
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'admin not updated due to profile photo error',
+                                    status: 0
+                                })
+                            }
+                        )
+                    } else {
+                        await adminModel.updateOne(
+                            {
+                                _id: id
+                            },
+                            {
+                                $set: {
+                                    ...data
+                                }
+                            }
+                        ).then(
+                            async () => {
+                                const admin = await adminModel.findById(id)
+                                resolve({
+                                    msg: 'admin updated',
+                                    status: 1,
+                                    admin: admin
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'admin not updated',
+                                    status: 0
+                                })
+                            }
+                        )
+                    }
+                } catch (error) {
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+}
+
+module.exports = adminController;
