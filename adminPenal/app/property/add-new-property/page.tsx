@@ -31,7 +31,7 @@ export default function newPropertyAdd() {
         formData.append('state', event.target.state.value);
         formData.append('description', event.target.description.value);
 
-        axios.post('http://localhost:5001/property/create', formData).then(
+        axios.post('https://admin-property.onrender.com/property/create', formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 event.target.reset();

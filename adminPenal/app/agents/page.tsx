@@ -16,7 +16,7 @@ export default function Agent() {
 
     // statusChange part
     const statusChange = (id) => {
-        axios.put(`http://localhost:5001/agent/status-change?id=${id}`).then(
+        axios.put(`https://admin-property.onrender.com/agent/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 allAgent(searchagents, '', skip)

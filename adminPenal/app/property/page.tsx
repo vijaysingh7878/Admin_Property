@@ -18,7 +18,7 @@ export default function ViewProperty() {
 
     const actionHendler = (id, num) => {
 
-        axios.put(`http://localhost:5001/property/status-change?id=${id}`, { num }).then(
+        axios.put(`https://admin-property.onrender.com/property/status-change?id=${id}`, { num }).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 propertyShow(filter, searchProperty, '', skip)
@@ -36,7 +36,7 @@ export default function ViewProperty() {
 
     const viewPropertyhendler = (id) => {
 
-        axios.get(`http://localhost:5001/property/read?id=${id}`, {
+        axios.get(`https://admin-property.onrender.com/property/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -54,7 +54,7 @@ export default function ViewProperty() {
 
     // deleteProperty part
     // const deleteProperty = (id) => {
-    //     axios.delete(`http://localhost:5001/property/delete/${id}`).then(
+    //     axios.delete(`https://admin-property.onrender.com/property/delete/${id}`).then(
     //         (success) => {
     //             tostymsg(success.data.msg, success.data.status)
     //             propertyFatch()

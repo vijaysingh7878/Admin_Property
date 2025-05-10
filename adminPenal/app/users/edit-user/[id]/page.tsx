@@ -13,7 +13,7 @@ export default function EditUser({ params }) {
 
     // user read part
     const userRead = async () => {
-        await axios.get(`http://localhost:5001/user/read?id=${id}`, {
+        await axios.get(`https://admin-property.onrender.com/user/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -30,7 +30,7 @@ export default function EditUser({ params }) {
     // remove profile photo start
     const removeProfilePhoto = () => {
         if (user?.profile_Photo) {
-            axios.put(`http://localhost:5001/user/remove-profile?id=${id}`).then(
+            axios.put(`https://admin-property.onrender.com/user/remove-profile?id=${id}`).then(
                 (success) => {
                     tostymsg(success.data.msg, success.data.status)
                     userRead()
@@ -60,7 +60,7 @@ export default function EditUser({ params }) {
         formData.append('email', event.target.email.value)
         formData.append('location', event.target.location.value)
 
-        axios.patch(`http://localhost:5001/user/user-update/${id}`, formData).then(
+        axios.patch(`https://admin-property.onrender.com/user/user-update/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 router.push('/users')

@@ -22,7 +22,7 @@ export default function EditBlog({ params }) {
             formData.append('mainImage', e.target.mainImage.files[0]);
         }
 
-        axios.put(`http://localhost:5001/blog/edit-blog/${id}`, formData).then((response) => {
+        axios.put(`https://admin-property.onrender.com/blog/edit-blog/${id}`, formData).then((response) => {
             tostymsg(response.data.msg, response.data.status);
             router.push('/blog')
 

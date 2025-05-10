@@ -17,7 +17,7 @@ export default function ChatPage() {
 
   const chatHendler = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/chat/read/chat', {
+      const response = await axios.get('https://admin-property.onrender.com/chat/read/chat', {
         params: {
           senderId: admin._id,
           receiverId: selectChat,
@@ -41,7 +41,7 @@ export default function ChatPage() {
     };
     console.log(data);
 
-    await axios.post('http://localhost:5001/chat/create', data);
+    await axios.post('https://admin-property.onrender.com/chat/create', data);
 
     socket.current.emit('sendMessage', data);
     setMessage((prevMessages) => [...prevMessages, { msg: msg, senderId: admin._id, timestamp: new Date() }]);
@@ -57,7 +57,7 @@ export default function ChatPage() {
 
   useEffect(() => {
 
-    socket.current = io('http://localhost:5001');
+    socket.current = io('https://admin-property.onrender.com');
 
     socket.current.emit('join', admin._id);
 

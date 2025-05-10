@@ -38,7 +38,7 @@ export const Context = ({ children }) => {
     // propertyShow part
     const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0) => {
 
-        await axios.get(`http://localhost:5001/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`, {
+        await axios.get(`https://admin-property.onrender.com/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -56,7 +56,7 @@ export const Context = ({ children }) => {
 
     // allUser part
     const allUser = async (searchUsers = '', filter = '', skip = 0) => {
-        await axios.get(`http://localhost:5001/user/read?filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}`, {
+        await axios.get(`https://admin-property.onrender.com/user/read?filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -74,7 +74,7 @@ export const Context = ({ children }) => {
 
     // allAgent part
     const allAgent = async (searchUsers = '', filter = '', id = '', skip = 0) => {
-        await axios.get(`http://localhost:5001/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
+        await axios.get(`https://admin-property.onrender.com/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -91,7 +91,7 @@ export const Context = ({ children }) => {
     }
     //   requestview part
     const requestView = async (filter = '') => {
-        await axios.get(`http://localhost:5001/req/read?filter=${filter}`, {
+        await axios.get(`https://admin-property.onrender.com/req/read?filter=${filter}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -107,7 +107,7 @@ export const Context = ({ children }) => {
     }
     // viewBlog part
     const viewBlog = (id = '') => {
-        axios.get(`http://localhost:5001/blog/read?id=${id}`).then(
+        axios.get(`https://admin-property.onrender.com/blog/read?id=${id}`).then(
             (success) => {
                 setBlog(success.data.allBlog)
             }
@@ -119,7 +119,7 @@ export const Context = ({ children }) => {
     }
     // viewChat part
     const viewChat = (id = '') => {
-        axios.get(`http://localhost:5001/chat/read`).then(
+        axios.get(`https://admin-property.onrender.com/chat/read`).then(
             (success) => {
                 setChat(success.data.user)
             }

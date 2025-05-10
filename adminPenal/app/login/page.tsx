@@ -18,7 +18,7 @@ export default function Login() {
       email: event.target.email.value,
       password: event.target.password.value
     }
-    axios.post('http://localhost:5001/admin/login', admin).then(
+    axios.post('https://admin-property.onrender.com/admin/login', admin).then(
       (success) => {
         if (success.data.status == 1) {
           tostymsg(success.data.msg, success.data.status)

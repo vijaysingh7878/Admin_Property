@@ -86,7 +86,7 @@ export default function AdminSideBar() {
     formData.append('email', e.target.email.value)
     formData.append('location', e.target.location.value)
 
-    axios.patch(`http://localhost:5001/admin/admin-update/${admin._id}`, formData, {
+    axios.patch(`https://admin-property.onrender.com/admin/admin-update/${admin._id}`, formData, {
       headers: {
         Authorization: `${localStorage.getItem("adminToken")}`
       }

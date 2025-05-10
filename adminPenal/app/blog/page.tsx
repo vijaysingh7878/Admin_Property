@@ -9,7 +9,7 @@ const AdminBlogList = () => {
     const { tostymsg, viewBlog, blog } = useContext(MainContext);
 
     const statusChange = (id) => {
-        axios.put(`http://localhost:5001/blog/status-change?id=${id}`).then(
+        axios.put(`https://admin-property.onrender.com/blog/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status);
                 viewBlog()
@@ -21,7 +21,7 @@ const AdminBlogList = () => {
         )
     }
     const deleteBlog = (id) => {
-        axios.delete(`http://localhost:5001/blog/delete/${id}`).then(
+        axios.delete(`https://admin-property.onrender.com/blog/delete/${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status);
                 viewBlog()

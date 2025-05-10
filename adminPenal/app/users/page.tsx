@@ -18,7 +18,7 @@ export default function User() {
 
 
     const viewUserHendler = (id) => {
-        axios.get(`http://localhost:5001/user/read?id=${id}`, {
+        axios.get(`https://admin-property.onrender.com/user/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -37,7 +37,7 @@ export default function User() {
     }
     // statusChange part
     const statusChange = (id) => {
-        axios.put(`http://localhost:5001/user/status-change?id=${id}`).then(
+        axios.put(`https://admin-property.onrender.com/user/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 allUser(searchUsers, filter, skip)

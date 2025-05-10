@@ -12,7 +12,7 @@ export default function EditAgents({ params }) {
     // remove profile photo start
     const removeProfilePhoto = () => {
         if (agents?.profile_Photo) {
-            axios.put(`http://localhost:5001/agent/remove-profile?id=${id}`).then(
+            axios.put(`https://admin-property.onrender.com/agent/remove-profile?id=${id}`).then(
                 (success) => {
                     tostymsg(success.data.msg, success.data.status)
                     agentsRead()
@@ -42,7 +42,7 @@ export default function EditAgents({ params }) {
         formData.append('email', event.target.email.value)
         formData.append('location', event.target.location.value)
 
-        axios.patch(`http://localhost:5001/agent/agent-update/${id}`, formData).then(
+        axios.patch(`https://admin-property.onrender.com/agent/agent-update/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 router.push('/agents')

@@ -18,13 +18,13 @@ const app = http.createServer(server);
 
 const io = new Server(app, {
     cors: {
-        origin: process.env.BASE_URL
+        origin: process.env.NEXT_PUBLIC_BASE_URL
     }
 })
 
 server.use(cors(
     {
-        origin: [process.env.BASE_URL]
+        origin: [process.env.NEXT_PUBLIC_BASE_URL]
     }
 ))
 

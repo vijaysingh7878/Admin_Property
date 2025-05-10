@@ -27,7 +27,7 @@ export default function CreateBlog() {
         formData.append('long_description', longDescription);
         formData.append('mainImage', mainImage);
 
-        axios.post('http://localhost:5001/blog/create', formData, {
+        axios.post('https://admin-property.onrender.com/blog/create', formData, {
             headers: {
                 Authorization: `${localStorage.getItem('adminToken')}`,
             },
