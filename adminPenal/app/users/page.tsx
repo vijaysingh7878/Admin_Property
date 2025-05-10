@@ -3,21 +3,31 @@ import axios from "axios"
 import { useContext, useEffect, useRef, useState } from "react"
 import { MainContext } from "../context/context"
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import Pagination from "../componants/Pagination";
+
 
 export default function User() {
-    const { tostymsg } = useContext(MainContext);
-    const [users, setUsers] = useState()
+    const { tostymsg, allUser, users, totalUsers, limit, skip, setSkip } = useContext(MainContext);
     const [searchUsers, setSearchUsers] = useState(null)
+    const [filter, setFilter] = useState('')
+    const [viewUser, setViewUser] = useState(false);
+    const [userDetails, setUserDetails] = useState(false);
+    const searchParams = useSearchParams()
 
 
-    const allUser = async () => {
-        await axios.get(`http://localhost:5001/user/read?name=${searchUsers}`, {
+    const viewUserHendler = (id) => {
+        axios.get(`http://localhost:5001/user/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
         }).then(
             (success) => {
-                setUsers(success.data.users)
+                console.log(success.data);
+
+                setUserDetails(success.data.users);
+                setViewUser(true)
             }
         ).catch(
             (error) => {
@@ -25,13 +35,12 @@ export default function User() {
             }
         )
     }
-
     // statusChange part
     const statusChange = (id) => {
         axios.put(`http://localhost:5001/user/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                allUser()
+                allUser(searchUsers, filter, skip)
             }
         ).catch(
             (error) => {
@@ -43,65 +52,139 @@ export default function User() {
 
     useEffect(
         () => {
-            allUser()
-        }, [searchUsers]
+            const newValue = Number(searchParams.get('skip')) || 0
+            setSkip(newValue)
+            allUser(searchUsers, filter, newValue);
+        }, [searchParams, searchUsers, filter]
+    )
+
+    useEffect(
+        () => {
+            allUser(searchUsers, filter, skip);
+        }, [searchUsers, filter, skip]
     )
     return (
-        <div className="w-full my-3">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">All Users</h2>
-                <input
-                    onChange={(e) => setSearchUsers(e.target.value)}
-                    type="search"
-                    placeholder="Search user name or email"
-                    className="border border-black px-2 py-1 rounded outline-none"
-                />
-            </div>
+        <div className="w-full p-6 flex flex-col justify-between h-full">
+            <div>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-gray-500">All Users</h2>
+                    <input
+                        onChange={(e) => setSearchUsers(e.target.value)}
+                        type="search"
+                        placeholder="Search user name or email"
+                        className="border border-black px-2 py-1 rounded outline-none"
+                    />
+                    <div className="flex flex-col md:flex-row justify-end gap-4">
+                        <select
+                            className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            onChange={(e) => setFilter(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            <option value="active">Active</option>
+                            <option value="inActive">In Active</option>
+                        </select>
+                    </div>
+                </div>
 
-            <table className="min-w-full border border-gray-200 text-sm text-left mt-5">
-                <thead className="bg-gray-200 text-gray-600 uppercase ">
-                    <tr>
-                        <th className="px-4 py-2 border">S.NO.</th>
-                        <th className="px-4 py-2 border">Profile</th>
-                        <th className="px-4 py-2 border">name</th>
-                        <th className="px-4 py-2 border">Phone</th>
-                        <th className="px-4 py-2 border">Email</th>
-                        <th className="px-4 py-2 border">Location</th>
-                        <th className="px-4 py-2 border">status</th>
-                        <th className="px-4 py-2 border">Edit</th>
-                    </tr>
-                </thead>
-                <tbody className="text-gray-700">
-                    {
-                        users?.map(
-                            (data, index) => {
-                                return (
-                                    <tr key={index} className="hover:bg-gray-50">
-                                        <td className="px-4 py-2 border">{index + 1}</td>
-                                        <td className="px-4 py-2 border">
-                                            <img src={data.profile_Photo} alt="user" className="w-12 h-12 rounded-full object-cover" />
-                                        </td>
-                                        <td className="px-4 py-2 border">{data.name}</td>
-                                        <td className="px-4 py-2 border">{data.phone}</td>
-                                        <td className="px-4 py-2 border">{data.email}</td>
-                                        <td className="px-4 py-2 border">{data.location}</td>
-                                        <td className="px-4 py-2 border">
-                                            <button onClick={() => statusChange(data._id)} className={`${data.status ? 'bg-blue-500' : 'bg-red-500'}  text-white px-4 py-1 rounded transition`}>
-                                                {data.status ? 'IN' : "OUT"}
-                                            </button>
-                                        </td>
-                                        <td className="px-4 py-2 border">
-                                            <Link href={`users/edit-user/${data._id}`}>
-                                                <button className="text-blue-600 hover:underline">Edit</button>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                )
-                            }
-                        )
-                    }
-                </tbody>
-            </table>
-        </div>
+                <table className="min-w-full border border-gray-200 text-sm text-left mt-5">
+                    <thead className="bg-gray-200 text-gray-600 uppercase ">
+                        <tr>
+                            <th className="px-4 py-2 border">S.NO.</th>
+                            <th className="px-4 py-2 border">Profile</th>
+                            <th className="px-4 py-2 border">name</th>
+                            <th className="px-4 py-2 border">Phone</th>
+                            <th className="px-4 py-2 border">Email</th>
+                            <th className="px-4 py-2 border">Location</th>
+                            <th className="px-4 py-2 border">status</th>
+                            <th className="px-4 py-2 border">Edit</th>
+                            <th className="px-4 py-2 border">View</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-gray-700">
+                        {Array.isArray(users) &&
+                            users?.map(
+                                (data, index) => {
+                                    return (
+                                        <tr key={index} className="hover:bg-gray-50">
+                                            <td className="px-4 py-2 border">{index + 1 + skip}</td>
+                                            <td className="px-4 py-2 border">
+                                                <img src={data.profile_Photo} alt="user" className="w-12 h-12 rounded-full object-cover" />
+                                            </td>
+                                            <td className="px-4 py-2 border">{data.name}</td>
+                                            <td className="px-4 py-2 border">{data.phone}</td>
+                                            <td className="px-4 py-2 border">{data.email}</td>
+                                            <td className="px-4 py-2 border">{data.location}</td>
+                                            <td className="px-4 py-2 border">
+                                                <button onClick={() => statusChange(data._id)} className={`${data.status ? 'bg-blue-500' : 'bg-red-500'}  text-white px-4 py-1 rounded transition`}>
+                                                    {data.status ? 'IN' : "OUT"}
+                                                </button>
+                                            </td>
+                                            <td className="px-4 py-2 border">
+                                                <Link href={`users/edit-user/${data._id}`}>
+                                                    <button className="text-blue-600 hover:underline">Edit</button>
+                                                </Link>
+                                            </td>
+                                            <td className="px-4 py-2">
+                                                <button onClick={() => viewUserHendler(data._id)} className="text-blue-600 hover:underline">view</button>
+
+                                                {/* view property part */}
+                                                <div className={`fixed inset-0 bg-black bg-opacity-20 z-50 flex items-center justify-center w-full ${viewUser ? 'block' : 'hidden'}`}>
+                                                    <div className="bg-white rounded-lg shadow-xl max-h-[70%] max-w-[60%] overflow-y-auto p-6 relative">
+                                                        <button
+                                                            onClick={() => setViewUser(false)}
+                                                            className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl"
+                                                        >
+                                                            ×
+                                                        </button>
+
+                                                        <div className="max-w-3xl mx-auto p-8 bg-white rounded-xl shadow-lg">
+                                                            {/* Profile Image */}
+                                                            <div className="flex flex-col items-center">
+                                                                <div className="w-32 h-32 relative mb-4">
+                                                                    <Image src={userDetails?.profile_Photo || 'user'}
+                                                                        alt="Admin Profile"
+                                                                        fill
+                                                                        className="rounded-full object-cover shadow-lg border-4 border-gray-200"
+                                                                    />
+                                                                </div>
+                                                                <h2 className="text-3xl font-bold text-gray-800 mb-1">{userDetails?.name}</h2>
+                                                                <p className="text-gray-500 text-sm">{userDetails?.location}</p>
+                                                            </div>
+
+                                                            {/* Details */}
+                                                            <div className="mt-6 border-t pt-6 space-y-4 text-left text-gray-700">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-medium w-28">📧 Email:</span>
+                                                                    <span>{userDetails?.email}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-medium w-28">📞 Phone:</span>
+                                                                    <span>{userDetails?.phone}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-medium w-28">📍 Location:</span>
+                                                                    <span>{userDetails?.location}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-medium w-28">🟢 Status:</span>
+                                                                    <span className={userDetails?.status ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
+                                                                        {userDetails?.status ? 'Active' : 'Inactive'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                }
+                            )
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <Pagination total={totalUsers} limit={limit} skip={skip} value={'users'} />
+        </div >
     )
 }

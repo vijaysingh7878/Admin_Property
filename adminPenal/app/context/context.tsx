@@ -2,7 +2,7 @@
 
 import { toast, ToastContainer } from "react-toastify";
 import { createContext, useEffect, useState } from "react";
-import AdminHeader from "../componants/AdminHeader";
+// import AdminHeader from "../componants/AdminHeader";
 import AdminSideBar from "../componants/AdminSideBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter, usePathname } from "next/navigation";
@@ -18,25 +18,34 @@ export const Context = ({ children }) => {
 
     const admin = useSelector((state) => state.admin.data);
     const [loading, setLoading] = useState(true);
-    const [readProperty, setReadProperty] = useState()
+    const [readProperty, setReadProperty] = useState();
+    const [totalProperty, setTotalProperty] = useState()
     const [users, setUsers] = useState()
+    const [totalUsers, setTotalUsers] = useState()
     const [agents, setAgents] = useState();
+    const [totalAgents, setTotalAgents] = useState();
     const [request, setRequest] = useState();
     const [blog, setBlog] = useState();
+    const [chat, setChat] = useState();
+    const [limit, setLimit] = useState(10);
+    const [skip, setSkip] = useState();
+
 
     const tostymsg = (msg, status) => {
         toast(msg, { type: status ? "success" : "error" });
     };
 
     // propertyShow part
-    const propertyShow = () => {
-        axios.get('http://localhost:5001/property/read', {
+    const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0) => {
+
+        await axios.get(`http://localhost:5001/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
         }).then(
             (success) => {
                 setReadProperty(success.data.allProperty);
+                setTotalProperty(success.data.total)
             }
         ).catch(
             (error) => {
@@ -46,14 +55,15 @@ export const Context = ({ children }) => {
     }
 
     // allUser part
-    const allUser = async () => {
-        await axios.get('http://localhost:5001/user/read', {
+    const allUser = async (searchUsers = '', filter = '', skip = 0) => {
+        await axios.get(`http://localhost:5001/user/read?filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
         }).then(
             (success) => {
                 setUsers(success.data.users)
+                setTotalUsers(success.data.total)
             }
         ).catch(
             (error) => {
@@ -63,14 +73,15 @@ export const Context = ({ children }) => {
     }
 
     // allAgent part
-    const allAgent = async () => {
-        await axios.get('http://localhost:5001/agent/read', {
+    const allAgent = async (searchUsers = '', filter = '', id = '', skip = 0) => {
+        await axios.get(`http://localhost:5001/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
         }).then(
             (success) => {
                 setAgents(success.data.users)
+                setTotalAgents(success.data.total)
             }
         ).catch(
             (error) => {
@@ -79,8 +90,8 @@ export const Context = ({ children }) => {
         )
     }
     //   requestview part
-    const requestView = async () => {
-        await axios.get('http://localhost:5001/req/read', {
+    const requestView = async (filter = '') => {
+        await axios.get(`http://localhost:5001/req/read?filter=${filter}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -95,8 +106,8 @@ export const Context = ({ children }) => {
         )
     }
     // viewBlog part
-    const viewBlog = () => {
-        axios.get(`http://localhost:5001/blog/read`).then(
+    const viewBlog = (id = '') => {
+        axios.get(`http://localhost:5001/blog/read?id=${id}`).then(
             (success) => {
                 setBlog(success.data.allBlog)
             }
@@ -105,6 +116,24 @@ export const Context = ({ children }) => {
                 console.log(error);
             }
         )
+    }
+    // viewChat part
+    const viewChat = (id = '') => {
+        axios.get(`http://localhost:5001/chat/read`).then(
+            (success) => {
+                setChat(success.data.user)
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
+            }
+        )
+    }
+
+    // skip handler part
+    const skipHendler = (index, limit, path) => {
+        const newSkip = index * limit;
+        router.push(`/${path}?skip=${newSkip}&limit=${limit}`)
     }
 
     useEffect(() => {
@@ -126,18 +155,17 @@ export const Context = ({ children }) => {
     if (!admin && pathname !== "/login") return null;
 
     return (
-        <MainContext.Provider value={{ tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog }}>
+        <MainContext.Provider value={{ tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip }}>
             <>
                 {admin && pathname != "/login" ? (
-                    <>
-                        <AdminHeader />
-                        <div className="flex gap-1 h-[89vh]">
-                            <AdminSideBar />
-                            <main className="flex-1 overflow-y-auto p-1 bg-white">
-                                {children}
-                            </main>
-                        </div>
-                    </>
+                    <div className="flex">
+                        <AdminSideBar />
+
+                        <main className="flex-1 overflow-y-auto bg-white">
+                            {children}
+                        </main>
+
+                    </div>
                 ) : (
                     pathname == "/login" && children
                 )}

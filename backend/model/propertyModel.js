@@ -5,12 +5,13 @@ const propertySchema = new mongoose.Schema(
             type: String,
         },
         mainImage: {
-            type: String
+            type: String,
+            require: true
         },
         state: {
             type: String
         },
-        district: {
+        city: {
             type: String
         },
         area: {
@@ -19,12 +20,17 @@ const propertySchema = new mongoose.Schema(
         category: {
             type: String
         },
+        propertyType: {
+            type: String,
+            enum: ['buy', 'sell', 'rent'],
+        },
         price: {
             type: String
         },
         maltipleImage: [
             {
-                type: String
+                type: String,
+                require: true
             }
         ],
         short_description: {

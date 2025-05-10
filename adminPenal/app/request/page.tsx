@@ -1,45 +1,31 @@
 'use client'
 
 import axios from "axios"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { MainContext } from "../context/context"
 
 export default function RequestView() {
-    const [requests, setRequests] = useState()
+    const { requestView,request } = useContext(MainContext)
     const [filter, setFilter] = useState('')
 
-    const view = () => {
-        axios.get(`http://localhost:5001/req/read?filter=${filter}`, {
-            headers: {
-                Authorization: `${localStorage.getItem("adminToken")}`
-            }
-        }).then(
-            (success) => {
-                setRequests(success.data.request);
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
     useEffect(
         () => {
-            view()
+            requestView(filter)
         }, [filter]
     )
     return (
         <div className="bg-gray-100 p-6 min-h-screen">
             <div className="max-w-7xl mx-auto space-y-6">
 
-                <h1 className="text-3xl font-bold text-gray-800">User Property Requests</h1>
+                <h1 className="text-xl font-bold text-gray-500">User Property request</h1>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white p-4 rounded shadow text-center">
-                        <div className="text-gray-500 text-sm">Total Requests</div>
-                        <div className="text-2xl font-bold">{requests?.length}</div>
-                    </div>
                     {/* <div className="bg-white p-4 rounded shadow text-center">
-                        <div className="text-gray-500 text-sm">Today’s Requests</div>
+                        <div className="text-gray-500 text-sm">Total request</div>
+                        <div className="text-2xl font-bold">{request?.length}</div>
+                    </div> */}
+                    {/* <div className="bg-white p-4 rounded shadow text-center">
+                        <div className="text-gray-500 text-sm">Today’s request</div>
                         <div className="text-2xl font-bold">5</div>
                     </div> */}
                     {/* <div className="bg-white p-4 rounded shadow text-center">
@@ -68,12 +54,13 @@ export default function RequestView() {
                 {/* Table */}
                 <div className="overflow-x-auto bg-white rounded-lg">
                     {
-                        requests?.length > 0 ?
+                        request?.length > 0 ?
                             <table className="min-w-full divide-y divide-gray-200 shadow">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">#</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">User</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Contect</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Email</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Property</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Location</th>
@@ -83,13 +70,17 @@ export default function RequestView() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {
-                                        requests?.map((req, index) => (
+                                    {Array.isArray(request) &&
+                                        request?.map((req, index) => (
                                             <tr key={index} className="hover:bg-gray-50">
                                                 <td className="px-4 py-3 text-sm">{index + 1}</td>
 
-                                                <td className="px-4 py-3 text-sm flex items-center space-x-3">
+                                                <td className="px-4 py-3 text-sm  space-x-3">
                                                     <span>{req.user.name}</span>
+                                                </td>
+
+                                                <td className="px-4 py-3 text-sm space-x-3">
+                                                    <span>{req.user.phone}</span>
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm text-gray-700">{req.user.email}</td>

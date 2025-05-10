@@ -69,27 +69,33 @@ class agentController {
             async (resolve, reject) => {
                 try {
                     let findagent;
+                    let filter = {};
                     if (query.id) {
                         findagent = await agentModel.findById(query.id).populate('property')
-                    } else if (query.name != 'null') {
-                        findagent = await agentModel.find({
-                            $or: [
-                                { name: new RegExp(query.name) },
-                                { email: new RegExp(query.name) },
-                                { location: new RegExp(query.name) }
-                            ]
-                        });
-                    } else {
-                        findagent = await agentModel.find()
                     }
+                    if (query.name != 'null') {
+                        filter.$or = [
+                            { name: new RegExp(query.name) },
+                            { email: new RegExp(query.name) },
+                            { location: new RegExp(query.name) }
+                        ]
+
+                    }
+                    if (query.filter) {
+                        filter.status = query.filter == 'active' ? true : false
+                    }
+                    findagent = await agentModel.find(filter).sort({ createdAt: -1 }).skip(Number(query.skip)).limit(Number(query.limit)).populate('property')
+                    const total = await agentModel.countDocuments(filter)
+
                     if (findagent) {
-                        resolve({
+                        return resolve({
                             msg: 'agent found',
                             status: 1,
-                            users: findagent
+                            users: findagent,
+                            total
                         })
                     } else {
-                        reject({
+                        return reject({
                             msg: 'agent not found',
                             status: 0
                         })

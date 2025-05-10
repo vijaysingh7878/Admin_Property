@@ -6,22 +6,9 @@ import { useRouter } from 'next/navigation';
 
 export default function EditBlog({ params }) {
     const { id } = use(params)
-    const { tostymsg } = useContext(MainContext);
+    const { tostymsg, viewBlog, blog } = useContext(MainContext);
     const router = useRouter();
-    const [blogPost, setBlogPost] = useState()
 
-    // edit api part
-    const viewBlog = () => {
-        axios.get(`http://localhost:5001/blog/read?id=${id}`).then(
-            (success) => {
-                setBlogPost(success.data.allBlog);
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -45,7 +32,7 @@ export default function EditBlog({ params }) {
     };
     useEffect(
         () => {
-            viewBlog()
+            viewBlog(id)
         }, [id]
     )
 
@@ -60,7 +47,7 @@ export default function EditBlog({ params }) {
                         id="title"
                         name='title'
                         type="text"
-                        defaultValue={blogPost?.title}
+                        defaultValue={blog?.title}
                         required
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
@@ -72,7 +59,7 @@ export default function EditBlog({ params }) {
                     <textarea
                         id="content"
                         name='content'
-                        defaultValue={blogPost?.content}
+                        defaultValue={blog?.content}
                         required
                         rows="6"
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -98,7 +85,7 @@ export default function EditBlog({ params }) {
                         id="shortDescription"
                         name='short_description'
                         type="text"
-                        value={blogPost?.short_description}
+                        value={blog?.short_description}
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
                 </div>
@@ -109,7 +96,7 @@ export default function EditBlog({ params }) {
                     <textarea
                         id="longDescription"
                         name='long_description'
-                        defaultValue={blogPost?.long_description}
+                        defaultValue={blog?.long_description}
                         rows="6"
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
@@ -120,7 +107,7 @@ export default function EditBlog({ params }) {
                     <label htmlFor="mainImage" className="block text-sm font-medium text-gray-700">Main Image</label>
                     <input
                         id="mainImage"
-                        defaultValue={blogPost?.mainImage}
+                        defaultValue={blog?.mainImage}
                         type="file"
                         name='mainImage'
                         className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"

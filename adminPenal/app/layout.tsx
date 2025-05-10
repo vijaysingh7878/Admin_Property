@@ -1,6 +1,5 @@
 import type React from "react";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import ClientProvider from "./clientProvider";
 
@@ -20,15 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ClientProvider> {/* Wrap with ClientProvider */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <ClientProvider> 
             {children}
-          </ThemeProvider>
         </ClientProvider>
       </body>
     </html>

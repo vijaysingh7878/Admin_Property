@@ -1,12 +1,16 @@
 const chatSocket = (io) => {
     io.on('connection', (socket) => {
         console.log('a user connected');
+
         socket.on('join', (userId) => {
+            socket.join(userId);
+            console.log(`User joined room: ${userId}`);
         });
 
-
         socket.on('sendMessage', (data) => {
-            io.emit('receiveMessage', data);
+            const { receiverId } = data;
+            
+            io.to(receiverId).emit('receiveMessage', data);
         });
 
         socket.on('disconnect', () => {

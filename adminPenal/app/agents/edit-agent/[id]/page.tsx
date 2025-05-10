@@ -1,39 +1,21 @@
 'use client'
 import { MainContext } from "@/app/context/context";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from "react";
 
 export default function EditAgents({ params }) {
     const { id } = use(params)
-    const { tostymsg } = useContext(MainContext);
-    const router = useRouter();
-    const [user, setUser] = useState()
+    const { tostymsg, allAgent, agents } = useContext(MainContext);
     const [selectImg, setSelectImg] = useState(null)
 
-    // agent read part
-    const userRead = async () => {
-        await axios.get(`http://localhost:5001/agent/read?id=${id}`, {
-            headers: {
-                Authorization: `${localStorage.getItem("adminToken")}`
-            }
-        }).then(
-            (success) => {
-                setUser(success.data.users);
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
+
     // remove profile photo start
     const removeProfilePhoto = () => {
-        if (user?.profile_Photo) {
+        if (agents?.profile_Photo) {
             axios.put(`http://localhost:5001/agent/remove-profile?id=${id}`).then(
                 (success) => {
                     tostymsg(success.data.msg, success.data.status)
-                    userRead()
+                    agentsRead()
                 }
             ).catch(
                 (error) => {
@@ -47,11 +29,11 @@ export default function EditAgents({ params }) {
     }
     useEffect(
         () => {
-            userRead()
+            allAgent('', id)
         }, []
     )
-    // user update part
-    const userEditHendler = (event) => {
+    // agents update part
+    const agentsEditHendler = (event) => {
         event.preventDefault();
         const formData = new FormData();
         formData.append('name', event.target.name.value)
@@ -73,7 +55,7 @@ export default function EditAgents({ params }) {
         )
     }
     return (
-        <form onSubmit={userEditHendler}
+        <form onSubmit={agentsEditHendler}
             className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md space-y-6"
         >
             <h2 className="text-2xl font-semibold text-gray-700">Edit</h2>
@@ -88,7 +70,7 @@ export default function EditAgents({ params }) {
                     className="mt-1 w-full text-sm text-gray-500 hidden"
                 />
                 <label htmlFor="profilePhoto" className="relative text-center">
-                    <img src={selectImg ? selectImg : user?.profile_Photo} alt="Photo" className="w-28 h-28 cursor-pointer rounded-full object-cover border" />
+                    <img src={selectImg ? selectImg : agents?.profile_Photo} alt="Photo" className="w-28 h-28 cursor-pointer rounded-full object-cover border" />
                     <span className="absolute top-0 left-0 bg-black w-full min-h-full text-white opacity-0 hover:opacity-45 rounded-full duration-300 cursor-pointer flex justify-center items-center font-bold">Edit</span>
                 </label>
                 <span className="text-red-400 hover:text-red-500 mt-2 cursor-pointer" onClick={() => removeProfilePhoto()}>remove</span>
@@ -99,7 +81,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="text"
                     name="name"
-                    defaultValue={user?.name}
+                    defaultValue={agents?.name}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -110,7 +92,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="tel"
                     name="phone"
-                    defaultValue={user?.phone}
+                    defaultValue={agents?.phone}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -121,7 +103,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="email"
                     name="email"
-                    defaultValue={user?.email}
+                    defaultValue={agents?.email}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -132,7 +114,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="text"
                     name="location"
-                    defaultValue={user?.location}
+                    defaultValue={agents?.location}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />

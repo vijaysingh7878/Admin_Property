@@ -5,38 +5,23 @@ import Link from "next/link";
 import { MainContext } from "../context/context";
 import { TiTick } from "react-icons/ti";
 import { GiCrossMark } from "react-icons/gi";
-import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import Pagination from "../componants/Pagination";
 
 export default function ViewProperty() {
-    const { tostymsg } = useContext(MainContext)
-    const [allproperty, serAllProperty] = useState([]);
+    const { tostymsg, propertyShow, readProperty, totalProperty, limit, skip, setSkip } = useContext(MainContext)
     const [filter, setFilter] = useState('')
     const [viewProperty, setViewProperty] = useState(false);
-    const [propertyDetails, setPropertyDetails] = useState(false);
+    const [propertyDetails, setPropertyDetails] = useState();
+    const [searchProperty, setSearchProperty] = useState('');
+    const searchParams = useSearchParams()
 
-    const propertyFatch = () => {
-        axios.get(`http://localhost:5001/property/read?filter=${filter}`, {
-            headers: {
-                Authorization: `${localStorage.getItem("adminToken")}`
-            }
-        }).then(
-            (success) => {
-                serAllProperty(success.data.allProperty);
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
-
-    // actionHendler part
     const actionHendler = (id, num) => {
 
         axios.put(`http://localhost:5001/property/status-change?id=${id}`, { num }).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                propertyFatch()
+                propertyShow(filter, searchProperty, '', skip)
             }
         ).catch(
             (error) => {
@@ -50,6 +35,7 @@ export default function ViewProperty() {
     // viewPropertyhendler part
 
     const viewPropertyhendler = (id) => {
+
         axios.get(`http://localhost:5001/property/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
@@ -81,25 +67,31 @@ export default function ViewProperty() {
     //         }
     //     )
     // }
-    useEffect(
-        () => {
-            propertyFatch()
-        }, [filter]
-    )
+
+    useEffect(() => {
+        const newSkip = Number(searchParams.get('skip')) || 0;
+        setSkip(newSkip);
+        propertyShow(filter, searchProperty, '', newSkip);
+    }, [searchParams, filter, searchProperty]);
+
     return (
         <>
             <div className="w-full my-6 px-4">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-gray-800">All Properties</h2>
+                <div className="flex  md:flex-row justify-between items-center mb-4">
+                    <h2 className="text-xl font-bold text-gray-500">All Properties</h2>
 
                     {/* <Link href="/property/add-new-property">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-3 md:mt-0">
                 + Add New Property
               </button>
             </Link> */}
-                </div>
 
-                <div className="flex flex-col md:flex-row justify-end gap-4 py-4">
+                    <input
+                        onChange={(e) => setSearchProperty(e.target.value)}
+                        type="search"
+                        placeholder="Search property name or location"
+                        className="border border-black px-2 py-1 rounded outline-none"
+                    />
                     <select
                         className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                         onChange={(e) => setFilter(e.target.value)}
@@ -111,10 +103,16 @@ export default function ViewProperty() {
                         <option value="available">Available</option>
                         <option value="sold">Sold</option>
                         <option value="soon">Soon</option>
+                        <option value="buy">Buy</option>
+                        <option value="sell">Sell</option>
+                        <option value="rent">Rent</option>
                     </select>
+
                 </div>
 
-                {allproperty?.length > 0 ? (
+
+                {Array.isArray(readProperty) &&
+                    readProperty?.length > 0 ? (
                     <div className="overflow-auto rounded-md shadow-sm border border-gray-200">
                         <table className="min-w-full text-sm text-left">
                             <thead className="bg-gray-100 text-gray-600 uppercase">
@@ -124,18 +122,19 @@ export default function ViewProperty() {
                                     <th className="px-4 py-3">Title</th>
                                     <th className="px-4 py-3">Category</th>
                                     <th className="px-4 py-3">Price</th>
+                                    <th className="px-4 py-3">Type</th>
                                     <th className="px-4 py-3">Location</th>
                                     <th className="px-4 py-3">Agent</th>
                                     <th className="px-4 py-3">Status</th>
                                     <th className="px-4 py-3 text-center">Action</th>
-                                    {/* <th className="px-4 py-3">Edit</th> */}
+                                    <th className="px-4 py-3">Edit</th>
                                     <th className="px-4 py-3">View</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white text-gray-700 divide-y divide-gray-200">
-                                {allproperty.map((data, index) => (
+                                {readProperty.map((data, index) => (
                                     <tr key={index} className="hover:bg-gray-50 transition">
-                                        <td className="px-4 py-2">{index + 1}</td>
+                                        <td className="px-4 py-2">{index + 1 + skip}</td>
                                         <td className="px-4 py-2">
                                             <img
                                                 src={data.mainImage}
@@ -146,6 +145,8 @@ export default function ViewProperty() {
                                         <td className="px-4 py-2">{data.title}</td>
                                         <td className="px-4 py-2">{data.category}</td>
                                         <td className="px-4 py-2 font-semibold">₹{data.price}</td>
+                                        <td className={`px-4 py-2 font-semibold`}>
+                                            <span className="bg-green-300 p-1 rounded-md">{data.propertyType}</span></td>
                                         <td className="px-4 py-2">
                                             {data.area} {data.district} {data.state}
                                         </td>
@@ -193,11 +194,11 @@ export default function ViewProperty() {
                                                 )}
                                             </div>
                                         </td>
-                                        {/* <td className="px-4 py-2">
+                                        <td className="px-4 py-2">
                                             <Link href={`/property/edit-property/${data._id}`}>
                                                 <button className="text-blue-600 hover:underline">Edit</button>
                                             </Link>
-                                        </td> */}
+                                        </td>
                                         <td className="px-4 py-2">
                                             <button onClick={() => viewPropertyhendler(data._id)} className="text-blue-600 hover:underline">view</button>
 
@@ -280,6 +281,8 @@ export default function ViewProperty() {
                                 ))}
                             </tbody>
                         </table>
+
+                        <Pagination total={totalProperty} limit={limit} skip={skip} value={'property'} />
                     </div>
                 ) : (
                     <p className="text-xl text-center font-medium text-gray-500 py-20">No Property Added</p>

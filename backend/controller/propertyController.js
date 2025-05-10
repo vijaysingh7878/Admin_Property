@@ -1,7 +1,7 @@
-const { default: mongoose } = require("mongoose");
 const agentModel = require("../model/agentModel");
 const propertyModel = require("../model/propertyModel");
-const cloudinary = require('cloudinary').v2
+const { ObjectId } = require('mongoose').Types;
+
 
 class propertyController {
     // property create part
@@ -12,6 +12,8 @@ class propertyController {
                     const agent = await agentModel.findById(data.agentId);
                     if (agent) {
                         let newProperty;
+                        console.log(file);
+
                         if (file) {
                             let maltipleImage = [];
                             for (var otherImg of file.maltipleImage) {
@@ -74,13 +76,14 @@ class propertyController {
         return new Promise(
             async (resolve, reject) => {
                 try {
-                    let allProperty;
+                    let allProperty
+                    let conditions = [];
+                    let skip = Number(query.skip)
+                    let limit = Number(query.limit)
                     if (query.id) {
-                        let result = await propertyModel.aggregate([
+                        allProperty = await propertyModel.aggregate([
                             {
-                                $match: {
-                                    _id: new mongoose.Types.ObjectId(query.id)
-                                }
+                                $match: { _id: new ObjectId(query.id) }
                             },
                             {
                                 $lookup: {
@@ -89,45 +92,42 @@ class propertyController {
                                     foreignField: '_id',
                                     as: 'agent'
                                 }
-                            },
-                            {
-                                $unwind:'$agent'
+                            }, {
+                                $unwind: '$agent'
                             }
                         ])
-                        allProperty = result[0];
-                        resolve({
+                        return resolve({
                             msg: 'property found',
                             status: 1,
-                            allProperty
+                            allProperty: allProperty[0]
                         })
                     }
                     if (query.filter) {
-                        allProperty = await propertyModel.aggregate([
-                            {
-                                $match: {
-                                    $or: [
-                                        { action: query.filter },
-                                        { status: query.filter }
-                                    ]
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'agents',
-                                    localField: 'agentId',
-                                    foreignField: '_id',
-                                    as: 'agent'
-                                }
-                            },
-                            { $sort: { createdAt: -1 } }
-                        ])
-                        resolve({
-                            msg: 'property found',
-                            status: 1,
-                            allProperty
-                        })
+                        conditions.push({
+                            $or: [
+                                { action: query.filter },
+                                { status: query.filter },
+                                { propertyType: query.filter }
+                            ]
+                        }
+                        )
                     }
+                    if (query.searchProperty) {
+                        conditions.push({
+                            $or: [
+                                { title: { $regex: new RegExp(query.searchProperty, 'i') } },
+                                { category: { $regex: new RegExp(query.searchProperty, 'i') } },
+                                { state: { $regex: new RegExp(query.searchProperty, 'i') } },
+                                { district: { $regex: new RegExp(query.searchProperty, 'i') } }
+                            ]
+                        }
+                        )
+                    }
+                    const Property = conditions.length > 0 ? { $and: conditions } : {};
                     allProperty = await propertyModel.aggregate([
+                        {
+                            $match: Property
+                        },
                         {
                             $lookup: {
                                 from: 'agents',
@@ -136,19 +136,22 @@ class propertyController {
                                 as: 'agent'
                             }
                         },
-                        { $sort: { createdAt: -1 } }
+                        { $sort: { createdAt: -1 } },
+                        { $skip: skip },
+                        { $limit: limit }
                     ])
-
+                    const total = await propertyModel.countDocuments(Property);
                     if (!allProperty) {
-                        reject({
+                        return reject({
                             msg: 'result not found',
                             status: 0
                         })
                     } else {
-                        resolve({
+                        return resolve({
                             msg: 'property found',
                             status: 1,
-                            allProperty
+                            allProperty,
+                            total
                         })
                     }
                 } catch (error) {

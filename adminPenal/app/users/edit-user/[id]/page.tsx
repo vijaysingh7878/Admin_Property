@@ -13,7 +13,11 @@ export default function EditUser({ params }) {
 
     // user read part
     const userRead = async () => {
-        await axios.get(`http://localhost:5001/user/read?id=${id}`).then(
+        await axios.get(`http://localhost:5001/user/read?id=${id}`, {
+            headers: {
+                Authorization: `${localStorage.getItem("adminToken")}`
+            }
+        }).then(
             (success) => {
                 setUser(success.data.users);
             }

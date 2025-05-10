@@ -68,25 +68,35 @@ class userController {
             async (resolve, reject) => {
                 try {
                     let findUser;
+                    let filter = {};
                     if (query.id) {
                         findUser = await userModel.findById(query.id);
-                    } else
-                        if (query.name != 'null') {
-                            findUser = await userModel.find({
-                                $or: [
-                                    { name: new RegExp(query.name) },
-                                    { email: new RegExp(query.name) },
-                                    { location: new RegExp(query.name) }
-                                ]
-                            })
-                        } else {
-                            findUser = await userModel.find()
-                        }
+                        return resolve({
+                            msg: 'user found',
+                            status: 1,
+                            users: findUser
+                        })
+                    }
+                    if (query.name != 'null') {
+                        filter.$or = [
+                            { name: new RegExp(query.name) },
+                            { email: new RegExp(query.name) },
+                            { location: new RegExp(query.name) }
+                        ]
+                    }
+                    if (query.filter) {
+                        filter.status = query.filter == 'active' ? true : false
+                    }
+
+                    findUser = await userModel.find(filter).sort({ createdAt: -1 }).skip(query.skip).limit(query.limit);
+                    const total = await userModel.countDocuments(filter)
+
                     if (findUser) {
                         resolve({
                             msg: 'user found',
                             status: 1,
-                            users: findUser
+                            users: findUser,
+                            total
                         })
                     } else {
                         reject({

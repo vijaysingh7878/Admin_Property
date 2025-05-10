@@ -6,6 +6,7 @@ import { MainContext } from "../context/context";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducer/AdminSlice";
 import { useRouter } from "next/navigation";
+
 export default function Login() {
   const { tostymsg } = useContext(MainContext);
   const dispatch = useDispatch()
@@ -19,10 +20,8 @@ export default function Login() {
     }
     axios.post('http://localhost:5001/admin/login', admin).then(
       (success) => {
-        tostymsg(success.data.msg, success.data.status)
-        console.log(success.data);
-
         if (success.data.status == 1) {
+          tostymsg(success.data.msg, success.data.status)
           router.push('/')
           dispatch(login(
             {
@@ -40,7 +39,10 @@ export default function Login() {
     )
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/banner.jpg')`
+      }}>
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Login to your account</h2>
 
@@ -73,7 +75,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-orange-400 text-white hover:text-black font-semibold duration-500 py-2 rounded-md hover:bg-white border-2 border-orange-400 transition"
           >
             Login
           </button>

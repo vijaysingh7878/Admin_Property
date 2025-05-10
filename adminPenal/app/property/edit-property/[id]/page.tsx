@@ -6,28 +6,9 @@ import { use, useContext, useEffect, useState } from "react";
 
 export default function EditProperty({ params }) {
     const { id } = use(params);
-    const { tostymsg } = useContext(MainContext)
-    const [selectProperty, setSelectProperty] = useState()
+    const { tostymsg, propertyShow, readProperty } = useContext(MainContext)
     const [showImg, setShowImg] = useState()
     const router = useRouter();
-    // read single property part
-    const property = () => {
-        axios.get(`http://localhost:5001/property/read?id=${id}`,{
-            headers: {
-                Authorization: `${localStorage.getItem("adminToken")}`
-            }
-        }).then(
-            (success) => {
-                setSelectProperty(success.data.allProperty);
-                console.log(success.data);
-
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
 
     // updateForm part
     const updateForm = (event) => {
@@ -77,7 +58,7 @@ export default function EditProperty({ params }) {
     }
     useEffect(
         () => {
-            property()
+            propertyShow('', '', id)
         }, [id]
     )
     return (
@@ -87,27 +68,27 @@ export default function EditProperty({ params }) {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="title">Title</label>
-                    <input type="text" defaultValue={selectProperty?.title} id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
+                    <input type="text" defaultValue={readProperty?.title} id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
                 </div>
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="image">Image</label>
-                    <input onChange={(e) => setShowImg(URL.createObjectURL(e.target.files[0]))}  type="file" id="image" defaultValue={selectProperty?.mainImage} name="image" className="w-full border-2 rounded px-3 py-2" />
+                    <input onChange={(e) => setShowImg(URL.createObjectURL(e.target.files[0]))} type="file" id="image" defaultValue={readProperty?.mainImage} name="image" className="w-full border-2 rounded px-3 py-2" />
                     {
                         showImg ?
                             <img src={showImg} alt="main image" className="p-2" />
                             :
-                            <img src={selectProperty?.mainImage} alt="main image" className="p-2" />
+                            <img src={readProperty?.mainImage} alt="main image" className="p-2" />
                     }
                 </div>
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="otherImage">Other Images</label>
-                    <input type="file" id="otherImage" multiple defaultValue={selectProperty?.maltipleImage} name="otherImage" className="w-full border-2 rounded px-3 py-2" />
+                    <input type="file" id="otherImage" multiple defaultValue={readProperty?.maltipleImage} name="otherImage" className="w-full border-2 rounded px-3 py-2" />
 
                     <div className="flex gap-2 flex-wrap justify-between">
                         {
-                            selectProperty?.maltipleImage?.map(
+                            readProperty?.maltipleImage?.map(
                                 (url, index) => {
                                     console.log(url);
 
@@ -125,26 +106,26 @@ export default function EditProperty({ params }) {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="category">Category</label>
-                    <input type="text" defaultValue={selectProperty?.category} id="category" name="category" className="w-full border-2 rounded px-3 py-2" />
+                    <input type="text" defaultValue={readProperty?.category} id="category" name="category" className="w-full border-2 rounded px-3 py-2" />
                 </div>
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="price">Price</label>
-                    <input type="text" id="price" defaultValue={selectProperty?.price} name="price" className="w-full border-2 rounded px-3 py-2" placeholder="Enter price" />
+                    <input type="text" id="price" defaultValue={readProperty?.price} name="price" className="w-full border-2 rounded px-3 py-2" placeholder="Enter price" />
                 </div>
 
                 <div className="mb-6">
                     <label className="mb-1 font-medium" htmlFor="location">Location</label>
                     <div className="flex gap-2">
-                        <input type="text" id="location" defaultValue={selectProperty?.area} name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
-                        <input type="text" id="district" defaultValue={selectProperty?.district} name="district" className="border-2 rounded px-3 py-2" placeholder="Enter district" />
-                        <input type="text" id="state" defaultValue={selectProperty?.state} name="state" className="border-2 rounded px-3 py-2" placeholder="Enter state" />
+                        <input type="text" id="location" defaultValue={readProperty?.area} name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
+                        <input type="text" id="district" defaultValue={readProperty?.district} name="district" className="border-2 rounded px-3 py-2" placeholder="Enter district" />
+                        <input type="text" id="state" defaultValue={readProperty?.state} name="state" className="border-2 rounded px-3 py-2" placeholder="Enter state" />
                     </div>
                 </div>
 
                 <div className="mb-6">
                     <label className="mb-1 font-medium" htmlFor="description">Description</label>
-                    <input type="text" id="description" defaultValue={selectProperty?.description} name="description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter description" />
+                    <input type="text" id="description" defaultValue={readProperty?.description} name="description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter description" />
                 </div>
                 <div className="text-center">
                     <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">

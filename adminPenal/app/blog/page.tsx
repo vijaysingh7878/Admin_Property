@@ -6,20 +6,7 @@ import Link from 'next/link';
 
 
 const AdminBlogList = () => {
-    const { tostymsg } = useContext(MainContext);
-    const [blogPosts, setBlogPost] = useState()
-
-    const viewBlog = () => {
-        axios.get(`http://localhost:5001/blog/read`).then(
-            (success) => {
-                setBlogPost(success.data.allBlog)
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
+    const { tostymsg, viewBlog, blog } = useContext(MainContext);
 
     const statusChange = (id) => {
         axios.put(`http://localhost:5001/blog/status-change?id=${id}`).then(
@@ -55,7 +42,7 @@ const AdminBlogList = () => {
     return (
         <div className="max-w-6xl mx-auto px-4 py-10">
             <div className='flex justify-between my-2 items-center'>
-                <h1 className="text-3xl font-bold mb-6">All Blog Posts</h1>
+                <h1 className="text-xl font-bold text-gray-500">All Blog Posts</h1>
                 <div className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 mx-5 rounded transition">
                     <Link href={'blog/add-blog'}>
                         + Add New
@@ -75,35 +62,36 @@ const AdminBlogList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {blogPosts?.map((post, index) => (
-                            <tr key={post._id} className="border-t hover:bg-gray-50 transition">
-                                <td className="py-3 px-4 text-sm">{index + 1}</td>
-                                <td className="px-4 py-2 border">
-                                    <img src={post.mainImage} alt="property" className="w-12 h-12 object-cover rounded" />
-                                </td>
-                                <td className="py-3 px-4 text-sm">{post.title}</td>
-                                {/* <td className="py-3 px-4 text-sm">{post.isPublished ? "Yes" : "No"}</td> */}
-                                <td className="py-3 px-4 text-sm">{new Date(post.createdAt).toLocaleDateString()}</td>
-                                <td className="py-3 px-4 text-sm text-center">
-                                    <button onClick={() => statusChange(post._id)} className={`${post.status ? 'bg-blue-500' : 'bg-red-500'}  text-white px-4 py-1 mx-5 rounded transition`}>
-                                        {post.status ? 'IN' : "OUT"}
-                                    </button>
-                                    <button
-                                        onClick={() => deleteBlog(post._id)}
-                                        className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 mx-5"
-                                    >
-                                        Delete
-                                    </button>
-                                    <button
-                                        className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
-                                    >
-                                    <Link href={`blog/edit-blog/${post._id}`}>
-                                       Edit
-                                    </Link>
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {Array.isArray(blog) &&
+                            blog?.map((post, index) => (
+                                <tr key={post._id} className="border-t hover:bg-gray-50 transition">
+                                    <td className="py-3 px-4 text-sm">{index + 1}</td>
+                                    <td className="px-4 py-2 border">
+                                        <img src={post.mainImage} alt="property" className="w-12 h-12 object-cover rounded" />
+                                    </td>
+                                    <td className="py-3 px-4 text-sm">{post.title}</td>
+                                    {/* <td className="py-3 px-4 text-sm">{post.isPublished ? "Yes" : "No"}</td> */}
+                                    <td className="py-3 px-4 text-sm">{new Date(post.createdAt).toLocaleDateString()}</td>
+                                    <td className="py-3 px-4 text-sm text-center">
+                                        <button onClick={() => statusChange(post._id)} className={`${post.status ? 'bg-blue-500' : 'bg-red-500'}  text-white px-4 py-1 mx-5 rounded transition`}>
+                                            {post.status ? 'IN' : "OUT"}
+                                        </button>
+                                        <button
+                                            onClick={() => deleteBlog(post._id)}
+                                            className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 mx-5"
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                                        >
+                                            <Link href={`blog/edit-blog/${post._id}`}>
+                                                Edit
+                                            </Link>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                     </tbody>
                 </table>
             </div>
