@@ -18,15 +18,18 @@ const app = http.createServer(server);
 
 const io = new Server(app, {
     cors: {
-        origin: process.env.NEXT_PUBLIC_BASE_URL
+        origin: process.env.CORS_ORIGIN
     }
 })
 
-server.use(cors(
-    {
-        origin: [process.env.NEXT_PUBLIC_BASE_URL]
-    }
-))
+
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
 
 server.use(express.json())
 server.use('/property', propertyRouter);
