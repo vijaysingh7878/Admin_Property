@@ -19,15 +19,15 @@ const allowedOrigins = process.env.CORS_ORIGIN.split(',');
 
 const io = new Server(server, {
     cors: {
-      origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, origin);
-        } else {
-          callback(new Error('Not allowed by CORS'));
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, origin);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
         }
-      }
     }
-  });
+});
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -38,7 +38,7 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
