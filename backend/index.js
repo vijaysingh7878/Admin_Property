@@ -14,17 +14,30 @@ const http = require('http');
 const { Server } = require('socket.io');
 const chatRouter = require('./router/chatRouter');
 const chatSocket = require('./socket_IO/chatSocket');
-const server  = http.createServer(app);
+const server = http.createServer(app);
+const allowedOrigins = process.env.CORS_ORIGIN.split(',');
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.CORS_ORIGIN
+      origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, origin);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
     }
-})
-
+  });
 
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: function (origin, callback) {
+        // If there's no origin (e.g., for non-browser requests like curl), allow it
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, origin);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
