@@ -9,14 +9,14 @@ const agentRouter = require('./router/agentRouter');
 const adminRouter = require('./router/adminRouter');
 const blogRouter = require('./router/blogRouter');
 const reqRouter = require('./router/reqRouter');
-const server = express();
+const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
 const chatRouter = require('./router/chatRouter');
 const chatSocket = require('./socket_IO/chatSocket');
-const app = http.createServer(server);
+const server  = http.createServer(app);
 
-const io = new Server(app, {
+const io = new Server(server, {
     cors: {
         origin: process.env.CORS_ORIGIN
     }
@@ -31,14 +31,14 @@ app.use(cors({
 }));
 
 
-server.use(express.json())
-server.use('/property', propertyRouter);
-server.use('/user', userRouter);
-server.use('/agent', agentRouter);
-server.use('/admin', adminRouter);
-server.use('/blog', blogRouter);
-server.use('/req', reqRouter);
-server.use('/chat', chatRouter);
+app.use(express.json())
+app.use('/property', propertyRouter);
+app.use('/user', userRouter);
+app.use('/agent', agentRouter);
+app.use('/admin', adminRouter);
+app.use('/blog', blogRouter);
+app.use('/req', reqRouter);
+app.use('/chat', chatRouter);
 
 // cloudinary part
 cloudinary.config({
@@ -48,7 +48,7 @@ cloudinary.config({
 })
 mongoose.connect(process.env.MONGODB_URL).then(
     () => {
-        app.listen(process.env.PORT, () => {
+        server.listen(process.env.PORT, () => {
             chatSocket(io)
             console.log(`port start ${process.env.PORT}`);
         })
