@@ -14,6 +14,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const chatRouter = require('./router/chatRouter');
 const chatSocket = require('./socket_IO/chatSocket');
+const emailRouter = require('./router/gmailRouter');
 const server = http.createServer(app);
 const allowedOrigins = process.env.CORS_ORIGIN.split(',');
 
@@ -52,6 +53,7 @@ app.use('/admin', adminRouter);
 app.use('/blog', blogRouter);
 app.use('/req', reqRouter);
 app.use('/chat', chatRouter);
+app.use('/mail', emailRouter);
 
 // cloudinary part
 cloudinary.config({

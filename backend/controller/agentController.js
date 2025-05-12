@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const agentModel = require("../model/agentModel");
 const bcrypt = require('bcryptjs')
 
@@ -66,12 +67,20 @@ class agentController {
     // readAgent part
     readAgent(query) {
         return new Promise(
-            async (resolve, reject) => {                
+            async (resolve, reject) => {
+
                 try {
                     let findagent;
                     let filter = {};
                     if (query.id) {
-                        findagent = await agentModel.findById(query.id).populate('property');
+                        const id = new mongoose.Types.ObjectId(query.id)
+                        filter._id = id
+                        findagent = await agentModel.findById(id).populate('property');
+                        return resolve({
+                            msg: 'one agent found',
+                            status: 1,
+                            users: findagent,
+                        })
                     }
                     if (query.name != 'null') {
                         filter.$or = [
@@ -79,7 +88,6 @@ class agentController {
                             { email: new RegExp(query.name) },
                             { location: new RegExp(query.name) }
                         ]
-
                     }
                     if (query.filter) {
                         filter.status = query.filter == 'active' ? true : false
@@ -102,7 +110,6 @@ class agentController {
                     }
                 } catch (error) {
                     console.log(error);
-
                     reject({
                         msg: 'Internal server error',
                         status: 0

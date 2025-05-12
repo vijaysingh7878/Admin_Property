@@ -12,7 +12,7 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    const BASE_URL = 'https://admin-property.onrender.com'
+    const BASE_URL = 'http://localhost:5001'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
@@ -74,7 +74,7 @@ export const Context = ({ children }) => {
     }
 
     // allAgent part
-    const allAgent = async (searchUsers = '', filter = '', id = null, skip = 0) => {
+    const allAgent = async (searchUsers = '', filter = '', id = '', skip = 0) => {
         await axios.get(BASE_URL + `/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
@@ -82,7 +82,6 @@ export const Context = ({ children }) => {
         }).then(
             (success) => {
                 setAgents(success.data.users)
-                console.log(success.data)
                 setTotalAgents(success.data.total)
             }
         ).catch(

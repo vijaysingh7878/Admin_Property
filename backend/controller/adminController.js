@@ -98,6 +98,59 @@ class adminController {
         return new Promise(
             async (resolve, reject) => {
                 try {
+                    const foundAdmin = await adminModel.findById(id)
+                    if (data.old_password && data.new_password) {
+                        const passwordMatch = await bcrypt.compare(data.old_password, foundAdmin.password);
+                        if (!passwordMatch) {
+                            return reject({ msg: 'Old password is incorrect', status: 0 });
+                        }
+                        const isSamePassword = await bcrypt.compare(data.new_password, foundAdmin.password);
+                        if (isSamePassword) {
+                            return reject({ msg: 'New password must be different from old password', status: 0 });
+                        }
+                        const hashedPassword = await bcrypt.hash(data.new_password, 10);
+                        await adminModel.updateOne(
+                            {
+                                _id: id
+                            },
+                            {
+                                $set: {
+                                    password: hashedPassword
+                                }
+                            }
+                        ).then(async () => {
+                            const admin = await adminModel.findById(id)
+                            resolve({
+                                msg: 'admin password updated',
+                                status: 1,
+                                admin: admin
+                            }
+                            )
+                        }
+                        )
+                    }
+                    if (data.new_password) {
+                        const hashedPassword = await bcrypt.hash(data.new_password, 10);
+                        await adminModel.updateOne(
+                            {
+                                _id: id
+                            },
+                            {
+                                $set: {
+                                    password: hashedPassword
+                                }
+                            }
+                        ).then(async () => {
+                            const admin = await adminModel.findById(id)
+                            resolve({
+                                msg: 'admin password updated',
+                                status: 1,
+                                admin: admin
+                            }
+                            )
+                        }
+                        )
+                    }
                     if (file) {
                         await adminModel.updateOne(
                             {
@@ -155,6 +208,8 @@ class adminController {
                         )
                     }
                 } catch (error) {
+                    console.log(error);
+
                     reject({
                         msg: 'Internal server error',
                         status: 0

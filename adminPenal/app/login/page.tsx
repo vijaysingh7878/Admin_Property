@@ -21,7 +21,6 @@ export default function Login() {
     axios.post(BASE_URL + '/admin/login', admin).then(
       (success) => {
         if (success.data.status == 1) {
-          tostymsg(success.data.msg, success.data.status)
           router.push('/')
           dispatch(login(
             {
@@ -30,6 +29,7 @@ export default function Login() {
             }
           ))
         }
+        tostymsg(success.data.msg, success.data.status)
       }
     ).catch(
       (error) => {

@@ -6,7 +6,7 @@ import { useContext, useEffect } from "react";
 
 export default function agents() {
     const { id } = useParams()
-    
+
     const { allAgent, agents } = useContext(MainContext)
     console.log(agents);
 
@@ -30,8 +30,8 @@ export default function agents() {
 
                     <div className="w-20 h-20 relative rounded-full overflow-hidden border border-gray-300">
                         <Image
-                            src={agents?.profile_Photo}
-                            alt={agents?.name}
+                            src={agents?.profile_Photo || 'agent'}
+                            alt={agents?.name || 'Profile Photo'}
                             layout="fill"
                             objectFit="cover"
                         />
