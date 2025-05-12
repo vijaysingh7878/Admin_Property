@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 
 export default function ChatPage() {
   let socket = useRef(null);
-  const { viewChat, chat } = useContext(MainContext);
+  const { BASE_URL, viewChat, chat } = useContext(MainContext);
   const chatEndScroll = useRef(null);
   const [message, setMessage] = useState([]);
   const [msg, setMsg] = useState('');
@@ -17,7 +17,7 @@ export default function ChatPage() {
 
   const chatHendler = async () => {
     try {
-      const response = await axios.get('https://admin-property.onrender.com/chat/read/chat', {
+      const response = await axios.get(BASE_URL + '/chat/read/chat', {
         params: {
           senderId: admin._id,
           receiverId: selectChat,
@@ -41,7 +41,7 @@ export default function ChatPage() {
     };
     console.log(data);
 
-    await axios.post('https://admin-property.onrender.com/chat/create', data);
+    await axios.post(BASE_URL + '/chat/create', data);
 
     socket.current.emit('sendMessage', data);
     setMessage((prevMessages) => [...prevMessages, { msg: msg, senderId: admin._id, timestamp: new Date() }]);
@@ -57,7 +57,7 @@ export default function ChatPage() {
 
   useEffect(() => {
 
-    socket.current = io('https://admin-property.onrender.com');
+    socket.current = io(BASE_URL);
 
     socket.current.emit('join', admin._id);
 

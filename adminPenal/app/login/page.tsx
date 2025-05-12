@@ -8,7 +8,7 @@ import { login } from "../../redux/reducer/AdminSlice";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const { tostymsg } = useContext(MainContext);
+  const { BASE_URL, tostymsg } = useContext(MainContext);
   const dispatch = useDispatch()
   const router = useRouter()
 
@@ -18,7 +18,7 @@ export default function Login() {
       email: event.target.email.value,
       password: event.target.password.value
     }
-    axios.post('https://admin-property.onrender.com/admin/login', admin).then(
+    axios.post(BASE_URL + '/admin/login', admin).then(
       (success) => {
         if (success.data.status == 1) {
           tostymsg(success.data.msg, success.data.status)

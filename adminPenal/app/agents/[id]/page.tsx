@@ -2,19 +2,20 @@
 import { MainContext } from "@/app/context/context";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 
 export default function agents() {
     const { id } = useParams()
-
+    
     const { allAgent, agents } = useContext(MainContext)
+    console.log(agents);
 
     useEffect(
         () => {
             if (id) {
-                allAgent('', id)
+                allAgent(null, null, id)
             }
-        }, []
+        }, [id]
     )
 
     return (

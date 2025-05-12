@@ -20,7 +20,7 @@ import { MainContext } from "../context/context";
 import axios from "axios";
 
 export default function AdminSideBar() {
-  const { tostymsg } = useContext(MainContext);
+  const { BASE_URL, tostymsg } = useContext(MainContext);
   const admin = useSelector(state => state.admin.data);
   const pathname = usePathname();
   const router = useRouter()
@@ -86,7 +86,7 @@ export default function AdminSideBar() {
     formData.append('email', e.target.email.value)
     formData.append('location', e.target.location.value)
 
-    axios.patch(`https://admin-property.onrender.com/admin/admin-update/${admin._id}`, formData, {
+    axios.patch(BASE_URL + `/admin/admin-update/${admin._id}`, formData, {
       headers: {
         Authorization: `${localStorage.getItem("adminToken")}`
       }

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export default function EditBlog({ params }) {
     const { id } = use(params)
-    const { tostymsg, viewBlog, blog } = useContext(MainContext);
+    const { BASE_URL, tostymsg, viewBlog, blog } = useContext(MainContext);
     const router = useRouter();
 
 
@@ -22,7 +22,7 @@ export default function EditBlog({ params }) {
             formData.append('mainImage', e.target.mainImage.files[0]);
         }
 
-        axios.put(`https://admin-property.onrender.com/blog/edit-blog/${id}`, formData).then((response) => {
+        axios.put(BASE_URL + `/blog/edit-blog/${id}`, formData).then((response) => {
             tostymsg(response.data.msg, response.data.status);
             router.push('/blog')
 

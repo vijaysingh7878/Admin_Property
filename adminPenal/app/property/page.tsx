@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation";
 import Pagination from "../componants/Pagination";
 
 export default function ViewProperty() {
-    const { tostymsg, propertyShow, readProperty, totalProperty, limit, skip, setSkip } = useContext(MainContext)
+    const { BASE_URL, tostymsg, propertyShow, readProperty, totalProperty, limit, skip, setSkip } = useContext(MainContext)
     const [filter, setFilter] = useState('')
     const [viewProperty, setViewProperty] = useState(false);
     const [propertyDetails, setPropertyDetails] = useState();
@@ -18,7 +18,7 @@ export default function ViewProperty() {
 
     const actionHendler = (id, num) => {
 
-        axios.put(`https://admin-property.onrender.com/property/status-change?id=${id}`, { num }).then(
+        axios.put(BASE_URL + `/property/status-change?id=${id}`, { num }).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 propertyShow(filter, searchProperty, '', skip)
@@ -36,7 +36,7 @@ export default function ViewProperty() {
 
     const viewPropertyhendler = (id) => {
 
-        axios.get(`https://admin-property.onrender.com/property/read?id=${id}`, {
+        axios.get(BASE_URL + `/property/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }

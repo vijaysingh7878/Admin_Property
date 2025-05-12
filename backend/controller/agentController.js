@@ -66,12 +66,12 @@ class agentController {
     // readAgent part
     readAgent(query) {
         return new Promise(
-            async (resolve, reject) => {
+            async (resolve, reject) => {                
                 try {
                     let findagent;
                     let filter = {};
                     if (query.id) {
-                        findagent = await agentModel.findById(query.id).populate('property')
+                        findagent = await agentModel.findById(query.id).populate('property');
                     }
                     if (query.name != 'null') {
                         filter.$or = [

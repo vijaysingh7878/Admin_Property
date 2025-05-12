@@ -6,7 +6,7 @@ import { use, useContext, useEffect, useState } from "react";
 
 export default function EditProperty({ params }) {
     const { id } = use(params);
-    const { tostymsg, propertyShow, readProperty } = useContext(MainContext)
+    const { BASE_URL, tostymsg, propertyShow, readProperty } = useContext(MainContext)
     const [showImg, setShowImg] = useState()
     const router = useRouter();
 
@@ -33,7 +33,7 @@ export default function EditProperty({ params }) {
         formData.append('state', event.target.state.value);
         formData.append('description', event.target.description.value);
 
-        axios.put(`https://admin-property.onrender.com/property/edit-property/${id}`, formData).then(
+        axios.put(BASE_URL + `/property/edit-property/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 router.push('/property')
@@ -45,7 +45,7 @@ export default function EditProperty({ params }) {
         )
     }
     const deleteOtherImg = (url) => {
-        axios.patch(`https://admin-property.onrender.com/property/edit-property/${id}`, { url }).then(
+        axios.patch(BASE_URL + `/property/edit-property/${id}`, { url }).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 property()

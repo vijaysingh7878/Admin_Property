@@ -4,12 +4,12 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { MainContext } from "../context/context"
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Pagination from "../componants/Pagination";
 
 
 export default function User() {
-    const { tostymsg, allUser, users, totalUsers, limit, skip, setSkip } = useContext(MainContext);
+    const { BASE_URL, tostymsg, allUser, users, totalUsers, limit, skip, setSkip } = useContext(MainContext);
     const [searchUsers, setSearchUsers] = useState(null)
     const [filter, setFilter] = useState('')
     const [viewUser, setViewUser] = useState(false);
@@ -18,7 +18,7 @@ export default function User() {
 
 
     const viewUserHendler = (id) => {
-        axios.get(`https://admin-property.onrender.com/user/read?id=${id}`, {
+        axios.get(BASE_URL + `/user/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -37,7 +37,7 @@ export default function User() {
     }
     // statusChange part
     const statusChange = (id) => {
-        axios.put(`https://admin-property.onrender.com/user/status-change?id=${id}`).then(
+        axios.put(BASE_URL + `/user/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 allUser(searchUsers, filter, skip)

@@ -5,7 +5,7 @@ import { MainContext } from '@/app/context/context';
 import { useRouter } from 'next/navigation';
 
 export default function CreateBlog() {
-    const { tostymsg } = useContext(MainContext);
+    const { tostymsg, BASE_URL } = useContext(MainContext);
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -27,7 +27,7 @@ export default function CreateBlog() {
         formData.append('long_description', longDescription);
         formData.append('mainImage', mainImage);
 
-        axios.post('https://admin-property.onrender.com/blog/create', formData, {
+        axios.post(BASE_URL + '/blog/create', formData, {
             headers: {
                 Authorization: `${localStorage.getItem('adminToken')}`,
             },

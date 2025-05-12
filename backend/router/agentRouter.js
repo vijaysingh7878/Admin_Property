@@ -30,7 +30,7 @@ agentRouter.post('/create', agentImg.single('agentProfile'), (req, res) => {
 
 
 // agent read part
-agentRouter.get('/read',authAdmin, (req, res) => {
+agentRouter.get('/read', authAdmin, (req, res) => {
     const result = new agentController().readAgent(req.query).then(
         (success) => {
             res.send(success);

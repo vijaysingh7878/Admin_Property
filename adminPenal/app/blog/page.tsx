@@ -6,10 +6,10 @@ import Link from 'next/link';
 
 
 const AdminBlogList = () => {
-    const { tostymsg, viewBlog, blog } = useContext(MainContext);
+    const { BASE_URL, tostymsg, viewBlog, blog } = useContext(MainContext);
 
     const statusChange = (id) => {
-        axios.put(`https://admin-property.onrender.com/blog/status-change?id=${id}`).then(
+        axios.put(BASE_URL + `/blog/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status);
                 viewBlog()
@@ -21,7 +21,7 @@ const AdminBlogList = () => {
         )
     }
     const deleteBlog = (id) => {
-        axios.delete(`https://admin-property.onrender.com/blog/delete/${id}`).then(
+        axios.delete(BASE_URL + `/blog/delete/${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status);
                 viewBlog()

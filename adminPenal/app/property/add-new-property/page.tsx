@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 
 export default function newPropertyAdd() {
-    const { tostymsg } = useContext(MainContext);
+    const { BASE_URL, tostymsg } = useContext(MainContext);
     const [showImg, setShowImg] = useState()
 
     const router = useRouter();
@@ -31,7 +31,7 @@ export default function newPropertyAdd() {
         formData.append('state', event.target.state.value);
         formData.append('description', event.target.description.value);
 
-        axios.post('https://admin-property.onrender.com/property/create', formData).then(
+        axios.post(BASE_URL + '/property/create', formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 event.target.reset();

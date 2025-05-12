@@ -12,6 +12,7 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
+    const BASE_URL = 'https://admin-property.onrender.com'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
@@ -38,7 +39,7 @@ export const Context = ({ children }) => {
     // propertyShow part
     const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0) => {
 
-        await axios.get(`https://admin-property.onrender.com/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`, {
+        await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -56,7 +57,7 @@ export const Context = ({ children }) => {
 
     // allUser part
     const allUser = async (searchUsers = '', filter = '', skip = 0) => {
-        await axios.get(`https://admin-property.onrender.com/user/read?filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}`, {
+        await axios.get(BASE_URL + `/user/read?filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -73,14 +74,15 @@ export const Context = ({ children }) => {
     }
 
     // allAgent part
-    const allAgent = async (searchUsers = '', filter = '', id = '', skip = 0) => {
-        await axios.get(`https://admin-property.onrender.com/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
+    const allAgent = async (searchUsers = '', filter = '', id = null, skip = 0) => {
+        await axios.get(BASE_URL + `/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
         }).then(
             (success) => {
                 setAgents(success.data.users)
+                console.log(success.data)
                 setTotalAgents(success.data.total)
             }
         ).catch(
@@ -91,7 +93,7 @@ export const Context = ({ children }) => {
     }
     //   requestview part
     const requestView = async (filter = '') => {
-        await axios.get(`https://admin-property.onrender.com/req/read?filter=${filter}`, {
+        await axios.get(BASE_URL + `/req/read?filter=${filter}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -107,7 +109,7 @@ export const Context = ({ children }) => {
     }
     // viewBlog part
     const viewBlog = (id = '') => {
-        axios.get(`https://admin-property.onrender.com/blog/read?id=${id}`).then(
+        axios.get(BASE_URL + `/blog/read?id=${id}`).then(
             (success) => {
                 setBlog(success.data.allBlog)
             }
@@ -119,7 +121,7 @@ export const Context = ({ children }) => {
     }
     // viewChat part
     const viewChat = (id = '') => {
-        axios.get(`https://admin-property.onrender.com/chat/read`).then(
+        axios.get(BASE_URL + `/chat/read`).then(
             (success) => {
                 setChat(success.data.user)
             }
@@ -155,7 +157,7 @@ export const Context = ({ children }) => {
     if (!admin && pathname !== "/login") return null;
 
     return (
-        <MainContext.Provider value={{ tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip }}>
+        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip }}>
             <>
                 {admin && pathname != "/login" ? (
                     <div className="flex">

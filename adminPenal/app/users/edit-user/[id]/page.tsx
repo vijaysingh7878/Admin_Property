@@ -6,14 +6,14 @@ import { use, useContext, useEffect, useState } from "react";
 
 export default function EditUser({ params }) {
     const { id } = use(params)
-    const { tostymsg } = useContext(MainContext);
+    const { BASE_URL, tostymsg } = useContext(MainContext);
     const router = useRouter();
     const [user, setUser] = useState()
     const [selectImg, setSelectImg] = useState(null)
 
     // user read part
     const userRead = async () => {
-        await axios.get(`https://admin-property.onrender.com/user/read?id=${id}`, {
+        await axios.get(BASE_URL + `/user/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -30,7 +30,7 @@ export default function EditUser({ params }) {
     // remove profile photo start
     const removeProfilePhoto = () => {
         if (user?.profile_Photo) {
-            axios.put(`https://admin-property.onrender.com/user/remove-profile?id=${id}`).then(
+            axios.put(BASE_URL + `/user/remove-profile?id=${id}`).then(
                 (success) => {
                     tostymsg(success.data.msg, success.data.status)
                     userRead()
@@ -60,7 +60,7 @@ export default function EditUser({ params }) {
         formData.append('email', event.target.email.value)
         formData.append('location', event.target.location.value)
 
-        axios.patch(`https://admin-property.onrender.com/user/user-update/${id}`, formData).then(
+        axios.patch(BASE_URL + `/user/user-update/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 router.push('/users')
