@@ -32,6 +32,12 @@ const agentSchema = new mongoose.Schema({
             ref: 'property',
             require: true
         }
+    ],
+    rating: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'rating'
+        }
     ]
 },
     {

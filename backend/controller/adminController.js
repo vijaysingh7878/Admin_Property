@@ -218,6 +218,58 @@ class adminController {
             }
         )
     }
+
+    //  admin password update part
+    editAdminPassword(data) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const foundAdmin = await adminModel.findOne({ email: data.email })
+                    if (foundAdmin) {
+                        if (data.new_password) {
+                            const hashedPassword = await bcrypt.hash(data.new_password, 10);
+                            await adminModel.updateOne(
+                                {
+                                    _id: foundAdmin._id
+                                },
+                                {
+                                    $set: {
+                                        password: hashedPassword
+                                    }
+                                }
+                            ).then(() => {
+                                return resolve({
+                                    msg: 'admin password updated',
+                                    status: 1,
+                                }
+                                )
+                            }
+                            )
+                        } else {
+                            return reject({
+                                msg: 'Please enter vaild password',
+                                status: 0,
+                            }
+                            )
+                        }
+                    } else {
+                        return reject({
+                            msg: 'admin not found',
+                            status: 0,
+                        }
+                        )
+                    }
+                } catch (error) {
+                    console.log(error);
+
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
 }
 
 module.exports = adminController;

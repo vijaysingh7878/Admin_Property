@@ -1,19 +1,19 @@
 'use client'
 import { MainContext } from "@/app/context/context";
+import axios from "axios";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function agents() {
     const { id } = useParams()
-
-    const { allAgent, agents } = useContext(MainContext)
-    console.log(agents);
+    const { allAgent, agents, rating, averageRating } = useContext(MainContext)
 
     useEffect(
         () => {
             if (id) {
                 allAgent(null, null, id)
+                rating(id)
             }
         }, [id]
     )
@@ -26,6 +26,7 @@ export default function agents() {
                         <h2 className="text-2xl font-semibold mb-2">{agents?.name}</h2>
                         <p className="mb-1"><strong>Email:</strong> {agents?.email}</p>
                         <p><strong>Phone:</strong> {agents?.phone}</p>
+                        <span className="text-gray-400 text-sm bg-green-200 p-1">Rating: {averageRating || '-'}</span>
                     </div>
 
                     <div className="w-20 h-20 relative rounded-full overflow-hidden border border-gray-300">

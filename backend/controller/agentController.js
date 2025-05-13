@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const agentModel = require("../model/agentModel");
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const ratingModel = require("../model/ratingModel");
 
 
 class agentController {
@@ -68,14 +69,13 @@ class agentController {
     readAgent(query) {
         return new Promise(
             async (resolve, reject) => {
-
                 try {
                     let findagent;
                     let filter = {};
                     if (query.id) {
                         const id = new mongoose.Types.ObjectId(query.id)
                         filter._id = id
-                        findagent = await agentModel.findById(id).populate('property');
+                        findagent = await agentModel.findById(id).populate('property').populate('rating');
                         return resolve({
                             msg: 'one agent found',
                             status: 1,

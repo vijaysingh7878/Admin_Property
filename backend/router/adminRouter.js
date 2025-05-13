@@ -64,5 +64,18 @@ adminRouter.patch('/admin-update/:id', authAdmin, adminImg.single('adminProfile'
     )
 })
 
+// admin password update part
+adminRouter.post('/password', async (req, res) => {
+    const result = new adminController().editAdminPassword(req.body).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
+
 
 module.exports = adminRouter;

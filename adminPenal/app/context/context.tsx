@@ -12,7 +12,7 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    const BASE_URL = 'http://localhost:5001'
+    const BASE_URL = 'https://admin-property-pied.vercel.app'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
@@ -30,6 +30,7 @@ export const Context = ({ children }) => {
     const [chat, setChat] = useState();
     const [limit, setLimit] = useState(10);
     const [skip, setSkip] = useState();
+    const [averageRating, setAverageRating] = useState('')
 
 
     const tostymsg = (msg, status) => {
@@ -131,6 +132,24 @@ export const Context = ({ children }) => {
         )
     }
 
+    // rating part
+    const rating = async (id) => {
+
+        await axios.get(BASE_URL + `/rating/read?id=${id}`).then(
+            (success) => {
+                setAverageRating(success.data.averageRating);
+                console.log(success.data);
+
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
+
+            }
+        )
+    }
+
+
     // skip handler part
     const skipHendler = (index, limit, path) => {
         const newSkip = index * limit;
@@ -156,7 +175,7 @@ export const Context = ({ children }) => {
     if (!admin && pathname !== "/login") return null;
 
     return (
-        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip }}>
+        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating }}>
             <>
                 {admin && pathname != "/login" ? (
                     <div className="flex">

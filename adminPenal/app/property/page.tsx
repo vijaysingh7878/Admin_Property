@@ -9,13 +9,14 @@ import { useSearchParams } from "next/navigation";
 import Pagination from "../componants/Pagination";
 
 export default function ViewProperty() {
-    const { BASE_URL, tostymsg, propertyShow, readProperty, totalProperty, limit, skip, setSkip } = useContext(MainContext)
+    const { BASE_URL, tostymsg, propertyShow, readProperty, totalProperty, limit, skip, setSkip, rating, averageRating } = useContext(MainContext)
     const [filter, setFilter] = useState('')
     const [viewProperty, setViewProperty] = useState(false);
     const [propertyDetails, setPropertyDetails] = useState();
     const [searchProperty, setSearchProperty] = useState('');
     const searchParams = useSearchParams()
 
+    // status change part
     const actionHendler = (id, num) => {
 
         axios.put(BASE_URL + `/property/status-change?id=${id}`, { num }).then(
@@ -34,8 +35,9 @@ export default function ViewProperty() {
 
     // viewPropertyhendler part
 
-    const viewPropertyhendler = (id) => {
-
+    const viewPropertyhendler = (id, agent_Id) => {
+        
+        rating(agent_Id[0]._id);
         axios.get(BASE_URL + `/property/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
@@ -200,7 +202,7 @@ export default function ViewProperty() {
                                             </Link>
                                         </td>
                                         <td className="px-4 py-2">
-                                            <button onClick={() => viewPropertyhendler(data._id)} className="text-blue-600 hover:underline">view</button>
+                                            <button onClick={() => viewPropertyhendler(data._id, data.agent)} className="text-blue-600 hover:underline">view</button>
 
                                             {/* view property part */}
                                             <div className={`fixed inset-0 bg-black bg-opacity-20 z-50 flex items-center justify-center w-full ${viewProperty ? 'block' : 'hidden'}`}>
@@ -241,19 +243,19 @@ export default function ViewProperty() {
 
                                                         {/* Short Description */}
                                                         <div className="mt-8">
-                                                            <h2 className="text-2xl font-semibold text-gray-800">Short Description</h2>
+                                                            <h2 className="text-xl font-semibold text-gray-800">Short Description</h2>
                                                             <p className="mt-2 text-gray-600">{propertyDetails?.short_description}</p>
                                                         </div>
 
                                                         {/* Long Description */}
                                                         <div className="mt-8">
-                                                            <h2 className="text-2xl font-semibold text-gray-800">Long Description</h2>
+                                                            <h2 className="text-xl font-semibold text-gray-800">Long Description</h2>
                                                             <p className="mt-2 text-gray-600">{propertyDetails?.long_description}</p>
                                                         </div>
 
                                                         {/* Multiple Images */}
                                                         <div className="mt-8">
-                                                            <h2 className="text-2xl font-semibold text-gray-800">Gallery</h2>
+                                                            <h2 className="text-xl font-semibold text-gray-800">Gallery</h2>
                                                             <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                                                                 {propertyDetails?.maltipleImage?.map((image, index) => (
                                                                     <img
@@ -268,8 +270,8 @@ export default function ViewProperty() {
 
                                                         {/* Agent Info */}
                                                         <div className="mt-8">
-                                                            <h2 className="text-2xl font-semibold text-gray-800">Agent Info</h2>
-                                                            <p className="mt-2 text-gray-600">Agent ID: {propertyDetails?.agent?.name}</p>
+                                                            <h2 className="text-xl font-semibold text-gray-800">Info</h2>
+                                                            <p className="mt-2 text-gray-600">Agent ID: {propertyDetails?.agent?.name} <span className="text-[11px] text-green-500">({averageRating})</span></p>
                                                             <p className="mt-2 text-gray-500">Action Status: {propertyDetails?.action}</p>
                                                         </div>
                                                     </div>
