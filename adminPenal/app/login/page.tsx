@@ -6,6 +6,9 @@ import { MainContext } from "../context/context";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/reducer/AdminSlice";
 import { useRouter } from "next/navigation";
+import { MdEmail } from "react-icons/md";
+import { TbLockMinus } from "react-icons/tb";
+import { TbLockOff } from "react-icons/tb";
 
 export default function Login() {
   const { BASE_URL, tostymsg } = useContext(MainContext);
@@ -19,6 +22,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -83,35 +87,44 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100"
+    <div className="min-h-screen flex items-center bg-cover justify-end pr-10"
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/banner.jpg')`
+        backgroundImage: `url('/loginPage.jpg')`
       }}>
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Login to your account</h2>
 
         <form className="space-y-5" onSubmit={handleLogin}>
           {!showOtpStep && (
             <>
-              <div>
-                <label className="block text-gray-700 mb-1">Email</label>
+              <div className="relative w-full">
                 <input
                   type="email"
                   name="email"
                   placeholder="Enter your email"
-                  className="w-full px-4 py-2 border rounded-md"
+                  className="w-full px-4 py-2 pr-10 border rounded-md"
                   required
                 />
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+                  <MdEmail />
+                </span>
               </div>
-              <div>
-                <label className="block text-gray-700 mb-1">Password</label>
+              <div className="relative w-full">
                 <input
-                  type="password"
+                  type={`${showPassword ? 'text' : 'password'}`}
                   name="password"
                   placeholder="Enter your password"
                   className="w-full px-4 py-2 border rounded-md"
                   required
                 />
+                <span onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 cursor-pointer right-0 flex items-center pr-3 text-gray-500">
+                  {
+                    showPassword ?
+                      <TbLockMinus />
+                      :
+                      <TbLockOff />
+                  }
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <button
@@ -124,7 +137,7 @@ export default function Login() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-orange-400 text-white font-semibold py-2 rounded-md hover:bg-white hover:text-black border-2 border-orange-400 transition"
+                className="w-full bg-orange-400 hover:bg-transparent text-white font-semibold py-2 rounded-md hover:text-black border-2 border-orange-400 transition"
               >
                 Login
               </button>
