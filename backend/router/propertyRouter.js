@@ -32,7 +32,6 @@ propertyRouter.post('/create', uploadImg.fields([
     })
 
 // property read part
-
 propertyRouter.get('/read', (req, res) => {
     const result = new propertyController().propertyRead(req.query).then(
         (success) => {
@@ -60,8 +59,8 @@ propertyRouter.delete('/delete/:id', (req, res) => {
 
 // edit property part
 propertyRouter.put('/edit-property/:id', uploadImg.fields([
-    { name: 'image', maxCount: 1 },
-    { name: 'otherImage', maxCount: 4 }
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'maltipleImage', maxCount: 4 }
 ]), async (req, res) => {
     const result = new propertyController().propertyEdit(req.body, req.files, req.params.id).then(
         (success) => {

@@ -7,7 +7,7 @@ import { use, useContext, useEffect, useState } from "react";
 export default function EditProperty({ params }) {
     const { id } = use(params);
     const { BASE_URL, tostymsg, propertyShow, readProperty } = useContext(MainContext)
-    const [showImg, setShowImg] = useState()
+    const [showImg, setShowImg] = useState('')
     const router = useRouter();
 
     // updateForm part
@@ -17,26 +17,32 @@ export default function EditProperty({ params }) {
         const formData = new FormData();
 
         if (event.target.otherImage.files.length == 1) {
-            formData.append('otherImage', event.target.otherImage.files[0]);
+            formData.append('maltipleImage', event.target.otherImage.files[0]);
         } else {
             for (var img of event.target.otherImage.files) {
-                formData.append('otherImage', img)
+                formData.append('maltipleImage', img)
             }
-
         }
         formData.append('title', event.target.title.value);
-        formData.append('image', event.target.image.files[0] ?? null);
+        formData.append('agentId', event.target.agentId.value);
+        if (event.target.image.files[0]) {
+            formData.append('mainImage', event.target.image.files[0]);
+        }
         formData.append('category', event.target.category.value);
+        formData.append('propertyType', event.target.elements.propertyType.value);
         formData.append('price', event.target.price.value);
         formData.append('area', event.target.area.value);
-        formData.append('district', event.target.district.value);
+        formData.append('city', event.target.city.value);
         formData.append('state', event.target.state.value);
-        formData.append('description', event.target.description.value);
+        formData.append('short_description', event.target.short_description.value);
+        formData.append('long_description', event.target.long_description.value);
 
         axios.put(BASE_URL + `/property/edit-property/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                router.push('/property')
+                if (success.data.status == 1) {
+                    router.push('/property')
+                }
             }
         ).catch(
             (error) => {
@@ -44,11 +50,12 @@ export default function EditProperty({ params }) {
             }
         )
     }
+    
     const deleteOtherImg = (url) => {
         axios.patch(BASE_URL + `/property/edit-property/${id}`, { url }).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                property()
+                propertyShow('', '', id)
             }
         ).catch(
             (error) => {
@@ -68,12 +75,16 @@ export default function EditProperty({ params }) {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="title">Title</label>
-                    <input type="text" defaultValue={readProperty?.title} id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
+
+                    <div className="flex gap-2">
+                        <input type="text" defaultValue={readProperty?.title} id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
+                        <input type="text" defaultValue={readProperty?.agentId} id="agentId" name="agentId" className="w-full border-2 rounded px-3 py-2" placeholder="Enter agentId" />
+                    </div>
                 </div>
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="image">Image</label>
-                    <input onChange={(e) => setShowImg(URL.createObjectURL(e.target.files[0]))} type="file" id="image" defaultValue={readProperty?.mainImage} name="image" className="w-full border-2 rounded px-3 py-2" />
+                    <input onChange={(e) => setShowImg(URL.createObjectURL(e.target.files[0]))} type="file" id="image" name="image" className="w-full border-2 rounded px-3 py-2" />
                     {
                         showImg ?
                             <img src={showImg} alt="main image" className="p-2" />
@@ -84,7 +95,7 @@ export default function EditProperty({ params }) {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="otherImage">Other Images</label>
-                    <input type="file" id="otherImage" multiple defaultValue={readProperty?.maltipleImage} name="otherImage" className="w-full border-2 rounded px-3 py-2" />
+                    <input type="file" id="otherImage" multiple name="otherImage" className="w-full border-2 rounded px-3 py-2" />
 
                     <div className="flex gap-2 flex-wrap justify-between">
                         {
@@ -106,7 +117,19 @@ export default function EditProperty({ params }) {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="category">Category</label>
-                    <input type="text" defaultValue={readProperty?.category} id="category" name="category" className="w-full border-2 rounded px-3 py-2" />
+
+                    <div className="flex gap-2">
+                        <input type="text" defaultValue={readProperty?.category} id="category" name="category" className="w-full border-2 rounded px-3 py-2" />
+                        <select name="propertyType"
+                            defaultValue={readProperty?.propertyType}
+                            className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        >
+                            <option value="">--</option>
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                            <option value="rent">Rent</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="mb-4">
@@ -117,15 +140,19 @@ export default function EditProperty({ params }) {
                 <div className="mb-6">
                     <label className="mb-1 font-medium" htmlFor="location">Location</label>
                     <div className="flex gap-2">
-                        <input type="text" id="location" defaultValue={readProperty?.area} name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
-                        <input type="text" id="district" defaultValue={readProperty?.district} name="district" className="border-2 rounded px-3 py-2" placeholder="Enter district" />
+                        <input type="text" id="area" defaultValue={readProperty?.area} name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
+                        <input type="text" id="city" defaultValue={readProperty?.city} name="city" className="border-2 rounded px-3 py-2" placeholder="Enter city" />
                         <input type="text" id="state" defaultValue={readProperty?.state} name="state" className="border-2 rounded px-3 py-2" placeholder="Enter state" />
                     </div>
                 </div>
 
                 <div className="mb-6">
-                    <label className="mb-1 font-medium" htmlFor="description">Description</label>
-                    <input type="text" id="description" defaultValue={readProperty?.description} name="description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter description" />
+                    <label className="mb-1 font-medium" htmlFor="short_description">Short description</label>
+                    <input type="text" id="short_description" defaultValue={readProperty?.short_description} name="short_description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter short_description" />
+                </div>
+                <div className="mb-6">
+                    <label className="mb-1 font-medium" htmlFor="long_description">Long description</label>
+                    <input type="text" id="long_description" defaultValue={readProperty?.long_description} name="long_description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter long_description" />
                 </div>
                 <div className="text-center">
                     <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">

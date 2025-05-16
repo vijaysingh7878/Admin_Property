@@ -200,5 +200,47 @@ class ReqController {
             )
         }
     }
+
+
+    // user Delete part
+    reqDelete(Id) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const id = new mongoose.Types.ObjectId(Id);
+                    const delete_Req = await reqModel.findById(id);
+                    if (delete_Req) {
+                        reqModel.deleteOne({ _id: id }).then(
+                            () => {
+                                resolve({
+                                    msg: 'Request deleted',
+                                    status: 1
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'Request not deleted',
+                                    status: 0
+                                })
+                            }
+                        )
+                    } else {
+                        reject({
+                            msg: 'Request not found',
+                            status: 0
+                        })
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
 }
 module.exports = ReqController;

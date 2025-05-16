@@ -16,7 +16,7 @@ const storage = new CloudinaryStorage({
 const userImg = multer({ storage: storage })
 
 // user create part
-userRouter.post('/create', userImg.single('userProfile'), (req, res) => {
+userRouter.post('/create', userImg.single('profile_Photo'), (req, res) => {
     const result = new userController().createUser(req.body, req.file).then(
         (success) => {
             res.send(success);
@@ -92,5 +92,17 @@ userRouter.post('/login', async (req, res) => {
     }
 })
 
+// delete user part 
+userRouter.delete('/delete/:id', (req, res) => {    
+    const result = new userController().userDelete(req.params.id).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
 
 module.exports = userRouter;

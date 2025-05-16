@@ -1,21 +1,23 @@
 'use client'
 import { MainContext } from "@/app/context/context";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from "react";
 
 export default function EditAgents({ params }) {
     const { id } = use(params)
-    const { tostymsg, allAgent, agents } = useContext(MainContext);
+    const { BASE_URL, tostymsg, allAgent, agents } = useContext(MainContext);
     const [selectImg, setSelectImg] = useState(null)
+    const router = useRouter();
 
 
     // remove profile photo start
     const removeProfilePhoto = () => {
         if (agents?.profile_Photo) {
-            axios.put(`https://admin-property.onrender.com/agent/remove-profile?id=${id}`).then(
+            axios.put(BASE_URL + `/agent/remove-profile?id=${id}`).then(
                 (success) => {
                     tostymsg(success.data.msg, success.data.status)
-                    agentsRead()
+                    allAgent('', id)
                 }
             ).catch(
                 (error) => {
@@ -29,24 +31,27 @@ export default function EditAgents({ params }) {
     }
     useEffect(
         () => {
-            allAgent('', id)
-        }, []
+            allAgent('', '', id, '');
+        }, [id]
     )
     // agents update part
-    const agentsEditHendler = (event) => {
-        event.preventDefault();
+    const agentsEditHendler = (e) => {
+        e.preventDefault();
         const formData = new FormData();
-        formData.append('name', event.target.name.value)
-        formData.append('agentProfile', event.target.profilePhoto.files[0] ?? null)
-        formData.append('phone', event.target.phone.value)
-        formData.append('email', event.target.email.value)
-        formData.append('location', event.target.location.value)
+        formData.append('name', e.target.name.value)
+        if (e.target.profile_Photo) {
+            formData.append('profile_Photo', e.target.profile_Photo.files[0] ?? null)
+        }
+        formData.append('phone', e.target.phone.value)
+        formData.append('email', e.target.email.value)
+        formData.append('location', e.target.location.value)
+        formData.append('company', e.target.company.value)
 
-        axios.patch(`https://admin-property.onrender.com/agent/agent-update/${id}`, formData).then(
+        axios.patch(BASE_URL + `/agent/agent-update/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 router.push('/agents')
-                event.target.reset()
+                e.target.reset()
             }
         ).catch(
             (error) => {
@@ -104,6 +109,16 @@ export default function EditAgents({ params }) {
                     type="email"
                     name="email"
                     defaultValue={agents?.email}
+                    required
+                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Company</label>
+                <input
+                    type="company"
+                    name="company"
+                    defaultValue={agents?.company}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />

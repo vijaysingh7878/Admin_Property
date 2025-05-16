@@ -11,6 +11,9 @@ const agentSchema = new mongoose.Schema({
     password: {
         type: String,
     },
+    company: {
+        type: String,
+    },
     phone: {
         type: String
     },

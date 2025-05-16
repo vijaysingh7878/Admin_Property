@@ -44,7 +44,20 @@ export default function User() {
             }
         ).catch(
             (error) => {
-                tostymsg(error.data.msg, error.data.status)
+                console.log(error);
+            }
+        )
+    }
+
+    // delete User part
+    const deleteUser = (id) => {
+        axios.delete(BASE_URL + `/user/delete/${id}`).then(
+            (success) => {
+                tostymsg(success.data.msg, success.data.status)
+                allUser(searchUsers, filter, skip)
+            }
+        ).catch(
+            (error) => {
                 console.log(error);
             }
         )
@@ -90,7 +103,7 @@ export default function User() {
 
                     <Link href={'users/add-user'}
                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        // onClick={handleAddUser}
+                    // onClick={handleAddUser}
                     >
                         Add
                     </Link>
@@ -109,6 +122,7 @@ export default function User() {
                             <th className="px-4 py-2 border">status</th>
                             <th className="px-4 py-2 border">Edit</th>
                             <th className="px-4 py-2 border">View</th>
+                            <th className="px-4 py-2 border">Delete</th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-700">
@@ -186,6 +200,9 @@ export default function User() {
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td className="px-4 py-2 border text-center">
+                                                <button onClick={() => deleteUser(data._id)} className="text-blue-600 hover:underline">❌</button>
                                             </td>
                                         </tr>
                                     )

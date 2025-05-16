@@ -30,6 +30,20 @@ reqRouter.get('/read', authAdmin, (req, res) => {
             res.send(error);
         }
     )
+})
+
+// detele req part
+reqRouter.delete('/delete/:id', (req, res) => {
+    const result = new ReqController().reqDelete(req.params.id);
+    result.then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
 
 })
 module.exports = reqRouter;

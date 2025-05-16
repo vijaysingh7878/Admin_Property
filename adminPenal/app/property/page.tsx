@@ -36,7 +36,7 @@ export default function ViewProperty() {
     // viewPropertyhendler part
 
     const viewPropertyhendler = (id, agent_Id) => {
-        
+
         rating(agent_Id[0]._id);
         axios.get(BASE_URL + `/property/read?id=${id}`, {
             headers: {
@@ -55,20 +55,19 @@ export default function ViewProperty() {
     }
 
     // deleteProperty part
-    // const deleteProperty = (id) => {
-    //     axios.delete(`https://admin-property.onrender.com/property/delete/${id}`).then(
-    //         (success) => {
-    //             tostymsg(success.data.msg, success.data.status)
-    //             propertyFatch()
-    //         }
-    //     ).catch(
-    //         (error) => {
-    //             tostymsg(error.data.msg, error.data.status)
-    //             console.log(error);
+    const deleteProperty = (id) => {
+        axios.delete(BASE_URL + `/property/delete/${id}`).then(
+            (success) => {
+                tostymsg(success.data.msg, success.data.status)
+                propertyShow(filter, searchProperty, '', skip);
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
 
-    //         }
-    //     )
-    // }
+            }
+        )
+    }
 
     useEffect(() => {
         const newSkip = Number(searchParams.get('skip')) || 0;
@@ -81,13 +80,6 @@ export default function ViewProperty() {
             <div className="w-full my-6 px-4">
                 <div className="flex  md:flex-row justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-gray-500">All Properties</h2>
-
-                    {/* <Link href="/property/add-new-property">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-3 md:mt-0">
-                + Add New Property
-              </button>
-            </Link> */}
-
                     <input
                         onChange={(e) => setSearchProperty(e.target.value)}
                         type="search"
@@ -109,6 +101,11 @@ export default function ViewProperty() {
                         <option value="sell">Sell</option>
                         <option value="rent">Rent</option>
                     </select>
+                    <Link href="/property/add-new-property">
+                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mt-3 md:mt-0">
+                            Add
+                        </button>
+                    </Link>
 
                 </div>
 
@@ -122,7 +119,7 @@ export default function ViewProperty() {
                                     <th className="px-4 py-3">S.No.</th>
                                     <th className="px-4 py-3">Image</th>
                                     <th className="px-4 py-3">Title</th>
-                                    <th className="px-4 py-3">Category</th>
+                                    {/* <th className="px-4 py-3">Category</th> */}
                                     <th className="px-4 py-3">Price</th>
                                     <th className="px-4 py-3">Type</th>
                                     <th className="px-4 py-3">Location</th>
@@ -131,6 +128,7 @@ export default function ViewProperty() {
                                     <th className="px-4 py-3 text-center">Action</th>
                                     <th className="px-4 py-3">Edit</th>
                                     <th className="px-4 py-3">View</th>
+                                    <th className="px-4 py-3">Delete</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white text-gray-700 divide-y divide-gray-200">
@@ -145,7 +143,7 @@ export default function ViewProperty() {
                                             />
                                         </td>
                                         <td className="px-4 py-2">{data.title}</td>
-                                        <td className="px-4 py-2">{data.category}</td>
+                                        {/* <td className="px-4 py-2">{data.category}</td> */}
                                         <td className="px-4 py-2 font-semibold">₹{data.price}</td>
                                         <td className={`px-4 py-2 font-semibold`}>
                                             <span className="bg-green-300 p-1 rounded-md">{data.propertyType}</span></td>
@@ -201,6 +199,7 @@ export default function ViewProperty() {
                                                 <button className="text-blue-600 hover:underline">Edit</button>
                                             </Link>
                                         </td>
+
                                         <td className="px-4 py-2">
                                             <button onClick={() => viewPropertyhendler(data._id, data.agent)} className="text-blue-600 hover:underline">view</button>
 
@@ -226,7 +225,7 @@ export default function ViewProperty() {
                                                                 <h1 className="text-4xl font-bold text-gray-800">{propertyDetails?.title}</h1>
                                                                 <p className="mt-2 text-lg text-gray-600">{propertyDetails?.category}</p>
                                                                 <p className="mt-4 text-xl text-gray-700">{propertyDetails?.price}</p>
-                                                                <p className="mt-2 text-gray-500">{propertyDetails?.state}, {propertyDetails?.district}</p>
+                                                                <p className="mt-2 text-gray-500">{propertyDetails?.state}, {propertyDetails?.city}</p>
                                                                 <p className="mt-2 text-gray-500">{propertyDetails?.area}</p>
                                                                 <span
                                                                     className={`mt-2 inline-block text-sm px-3 py-1 rounded-full ${propertyDetails?.status === "available"
@@ -278,6 +277,9 @@ export default function ViewProperty() {
 
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <button onClick={() => deleteProperty(data._id)} className="text-blue-600 hover:underline">❌</button>
                                         </td>
                                     </tr>
                                 ))}

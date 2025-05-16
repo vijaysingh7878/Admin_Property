@@ -5,8 +5,25 @@ import { useContext, useEffect, useState } from "react"
 import { MainContext } from "../context/context"
 
 export default function RequestView() {
-    const { requestView,request } = useContext(MainContext)
+    const { BASE_URL, tostymsg, requestView, request } = useContext(MainContext)
     const [filter, setFilter] = useState('')
+
+
+    // delete Request part
+    const deleteReq = (id) => {
+        axios.delete(BASE_URL + `/req/delete/${id}`).then(
+            (success) => {
+                tostymsg(success.data.msg, success.data.status)
+                requestView(filter)
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
+
+            }
+        )
+    }
+
 
     useEffect(
         () => {
@@ -67,6 +84,7 @@ export default function RequestView() {
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Seller/Agent</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
                                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
@@ -108,6 +126,10 @@ export default function RequestView() {
 
                                                 <td className="px-4 py-3 text-sm text-gray-600">
                                                     {new Date(req.createdAt).toLocaleString()}
+                                                </td>
+
+                                                <td className="px-4 py-2">
+                                                    <button onClick={() => deleteReq(data._id)} className="text-blue-600 hover:underline">❌</button>
                                                 </td>
                                             </tr>
                                         ))

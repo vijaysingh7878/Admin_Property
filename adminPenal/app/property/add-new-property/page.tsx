@@ -6,11 +6,13 @@ import { useContext, useState } from "react";
 
 export default function newPropertyAdd() {
     const { BASE_URL, tostymsg } = useContext(MainContext);
-    const [showImg, setShowImg] = useState()
+    const [showImg, setShowImg] = useState('')
 
     const router = useRouter();
     const formHendler = (event) => {
         event.preventDefault();
+        console.log(event.target.elements.propertyType.value);
+
         const formData = new FormData();
 
         if (event.target.otherImage.files.length == 1) {
@@ -23,19 +25,25 @@ export default function newPropertyAdd() {
         }
 
         formData.append('title', event.target.title.value);
+        formData.append('agentId', event.target.agentId.value);
         formData.append('mainImage', event.target.image.files[0] ?? null);
         formData.append('category', event.target.category.value);
+        formData.append('propertyType', event.target.elements.propertyType.value);
         formData.append('price', event.target.price.value);
         formData.append('area', event.target.area.value);
-        formData.append('district', event.target.district.value);
+        formData.append('city', event.target.city.value);
         formData.append('state', event.target.state.value);
-        formData.append('description', event.target.description.value);
+        formData.append('short_description', event.target.short_description.value);
+        formData.append('long_description', event.target.long_description.value);
 
         axios.post(BASE_URL + '/property/create', formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                event.target.reset();
-                router.push('/property')
+                if (success.data.status == 1) {
+                    event.target.reset();
+                    setShowImg('')
+                    // router.push('/property')
+                }
             }
         ).catch(
             (error) => {
@@ -50,7 +58,11 @@ export default function newPropertyAdd() {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="title">Title</label>
-                    <input type="text" id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
+                    <div className="flex gap-2">
+                        <input type="text" id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
+                        <input type="text" id="agentId" name="agentId" className="w-full border-2 rounded px-3 py-2" placeholder="Enter agentId" />
+
+                    </div>
                 </div>
 
                 <div className="mb-4">
@@ -71,7 +83,17 @@ export default function newPropertyAdd() {
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="category">Category</label>
-                    <input type="text" id="category" name="category" className="w-full border-2 rounded px-3 py-2" />
+                    <div className="flex gap-2">
+                        <input type="text" id="category" name="category" className="w-full border-2 rounded px-3 py-2" />
+                        <select name="propertyType"
+                            className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        >
+                            <option value="">--</option>
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                            <option value="rent">Rent</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="mb-4">
@@ -82,15 +104,19 @@ export default function newPropertyAdd() {
                 <div className="mb-6">
                     <label className="mb-1 font-medium" htmlFor="location">Location</label>
                     <div className="flex gap-2">
-                        <input type="text" id="location" name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
-                        <input type="text" id="district" name="district" className="border-2 rounded px-3 py-2" placeholder="Enter district" />
+                        <input type="text" id="area" name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
+                        <input type="text" id="city" name="city" className="border-2 rounded px-3 py-2" placeholder="Enter city" />
                         <input type="text" id="state" name="state" className="border-2 rounded px-3 py-2" placeholder="Enter state" />
                     </div>
                 </div>
 
                 <div className="mb-6">
-                    <label className="mb-1 font-medium" htmlFor="description">Description</label>
-                    <input type="text" id="description" name="description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter description" />
+                    <label className="mb-1 font-medium" htmlFor="short_description">Short Description</label>
+                    <input type="text" id="short_description" name="short_description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter short description" />
+                </div>
+                <div className="mb-6">
+                    <label className="mb-1 font-medium" htmlFor="long_description">Long Description</label>
+                    <input type="text" id="long_description" name="long_description" className="w-full border-2 rounded px-3 py-2" placeholder="Enter long description" />
                 </div>
                 <div className="text-center">
                     <button type="submit" className="bg-blue-500 m-auto text-white px-6 py-2 rounded hover:bg-blue-600 transition">

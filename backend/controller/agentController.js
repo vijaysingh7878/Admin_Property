@@ -299,5 +299,46 @@ class agentController {
             }
         }
     }
+
+    // user Delete part
+    agentDelete(Id) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const id = new mongoose.Types.ObjectId(Id);
+                    const deleteAgent = await agentModel.findById(id);
+                    if (deleteAgent) {
+                        agentModel.deleteOne({ _id: id }).then(
+                            () => {
+                                resolve({
+                                    msg: 'Agent deleted',
+                                    status: 1
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'Agent not deleted',
+                                    status: 0
+                                })
+                            }
+                        )
+                    } else {
+                        reject({
+                            msg: 'Agent not found',
+                            status: 0
+                        })
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
 }
 module.exports = agentController;

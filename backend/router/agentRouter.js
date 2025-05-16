@@ -16,7 +16,7 @@ const storage = new CloudinaryStorage({
 const agentImg = multer({ storage: storage })
 
 // agent create part
-agentRouter.post('/create', agentImg.single('agentProfile'), (req, res) => {
+agentRouter.post('/create', agentImg.single('profile_Photo'), (req, res) => {
     const result = new agentController().createAgent(req.body, req.file).then(
         (success) => {
             res.send(success);
@@ -88,6 +88,19 @@ agentRouter.post('/login', async (req, res) => {
     } catch (error) {
         res.send(error)
     }
+})
+
+// delete agent part 
+agentRouter.delete('/delete/:id', (req, res) => {    
+    const result = new agentController().agentDelete(req.params.id).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
 })
 
 module.exports = agentRouter;

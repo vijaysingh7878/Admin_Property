@@ -24,6 +24,7 @@ export default function agents() {
                 <div className="flex justify-between items-start bg-white p-6 rounded-lg shadow-md">
                     <div>
                         <h2 className="text-2xl font-semibold mb-2">{agents?.name}</h2>
+                        <h2 className="text-md font-semibold mb-2 text-red-300">[ {agents?.company}]</h2>
                         <p className="mb-1"><strong>Email:</strong> {agents?.email}</p>
                         <p><strong>Phone:</strong> {agents?.phone}</p>
                         <span className="text-gray-400 text-sm bg-green-200 p-1">Rating: {averageRating || '-'}</span>

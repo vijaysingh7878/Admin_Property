@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const userModel = require("../model/userModel");
 const bcrypt = require('bcryptjs')
 
@@ -296,6 +297,47 @@ class userController {
                 status: 0
             }
         }
+    }
+
+    // user Delete part
+    userDelete(Id) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const id = new mongoose.Types.ObjectId(Id);
+                    const deleteUser = await userModel.findById(id);
+                    if (deleteUser) {
+                        userModel.deleteOne({ _id: id }).then(
+                            () => {
+                                resolve({
+                                    msg: 'User deleted',
+                                    status: 1
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'User not deleted',
+                                    status: 0
+                                })
+                            }
+                        )
+                    } else {
+                        reject({
+                            msg: 'User not found',
+                            status: 0
+                        })
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
     }
 }
 module.exports = userController;

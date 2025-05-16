@@ -77,7 +77,7 @@ class propertyController {
             async (resolve, reject) => {
                 try {
                     let allProperty
-                    let total ;
+                    let total;
                     if (query) {
                         let conditions = [];
                         let skip = Number(query.skip || 0)
@@ -229,12 +229,12 @@ class propertyController {
             let updateData = { ...data };
 
             if (file) {
-                if (file.image) {
-                    updateData.mainImage = file.image.path;
+                if (file.mainImage) {
+                    updateData.mainImage = file.mainImage.path;
                 }
-                if (file.otherImage) {
-                    let otherImages = file.otherImage.map(img => img.path);
-                    updateData.maltipleImage = otherImages;
+                if (file.maltipleImage) {
+                    let maltipleImage = file.maltipleImage.map(img => img.path);
+                    updateData.maltipleImage = maltipleImage;
                 }
             }
             await propertyModel.updateOne({ _id: id }, { $set: updateData });

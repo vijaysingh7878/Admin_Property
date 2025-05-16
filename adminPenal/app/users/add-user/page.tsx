@@ -4,46 +4,27 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
 
-const AddUserForm = ({ onSubmit }) => {
+const AddUserForm = () => {
     const { BASE_URL, tostymsg } = useContext(MainContext);
-    const [formData, setFormData] = useState({
-        name: '',
-        profile_Photo: '',
-        password: '',
-        phone: '',
-        email: '',
-        status: true,
-        location: ''
-    });
-
-    const handleChange = (e) => {
-
-        const { name, value, type, checked, files } = e.target;
-        if (type === 'file') {
-            const file = files[0];
-            console.log(files);
-            
-            if (file) {
-                setFormData({
-                    ...formData,
-                    profile_Photo: file,
-                });
-            }
-        }
-        setFormData({
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value
-        });
-
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
+        console.log(e.target.phone.value);
+
+        const formData = new FormData();
+        formData.append('name', e.target.name.value)
+        formData.append('profile_Photo', e.target.profile_Photo.files[0] ?? null)
+        formData.append('password', e.target.password.value)
+        formData.append('phone', e.target.phone.value)
+        formData.append('email', e.target.email.value)
+        formData.append('location', e.target.location.value)
 
         await axios.post(BASE_URL + '/user/create', formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
+                if (success.data.status == 1) {
+                    e.target.reset()
+                }
             }
         ).catch(
             (error) => {
@@ -61,8 +42,6 @@ const AddUserForm = ({ onSubmit }) => {
                 name="name"
                 type="text"
                 placeholder="Name"
-                value={formData.name}
-                onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border rounded"
             />
@@ -71,8 +50,6 @@ const AddUserForm = ({ onSubmit }) => {
                 name="profile_Photo"
                 type="file"
                 placeholder="Profile Photo URL"
-                value={formData.profile_Photo}
-                onChange={handleChange}
                 className="w-full px-3 py-2 border rounded"
             />
 
@@ -80,8 +57,6 @@ const AddUserForm = ({ onSubmit }) => {
                 name="password"
                 type="password"
                 placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
                 className="w-full px-3 py-2 border rounded"
             />
 
@@ -89,8 +64,6 @@ const AddUserForm = ({ onSubmit }) => {
                 name="phone"
                 type="text"
                 placeholder="Phone Number"
-                value={formData.phone}
-                onChange={handleChange}
                 className="w-full px-3 py-2 border rounded"
             />
 
@@ -98,8 +71,6 @@ const AddUserForm = ({ onSubmit }) => {
                 name="email"
                 type="email"
                 placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border rounded"
             />
@@ -108,20 +79,8 @@ const AddUserForm = ({ onSubmit }) => {
                 name="location"
                 type="text"
                 placeholder="Location"
-                value={formData.location}
-                onChange={handleChange}
                 className="w-full px-3 py-2 border rounded"
             />
-
-            <label className="flex items-center space-x-2">
-                <input
-                    type="checkbox"
-                    name="status"
-                    checked={formData.status}
-                    onChange={handleChange}
-                />
-                <span>Active</span>
-            </label>
 
             <button
                 type="submit"

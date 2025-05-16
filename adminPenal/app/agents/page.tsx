@@ -7,7 +7,7 @@ import Pagination from "../componants/Pagination";
 import { useSearchParams } from "next/navigation";
 
 export default function Agent() {
-    const { tostymsg, allAgent, agents, totalAgents, limit, skip, setSkip } = useContext(MainContext);
+    const { BASE_URL, tostymsg, allAgent, agents, totalAgents, limit, skip, setSkip } = useContext(MainContext);
     const [searchagents, setSearchagents] = useState(null)
     const searchParams = useSearchParams()
     const [filter, setFilter] = useState('')
@@ -16,14 +16,28 @@ export default function Agent() {
 
     // statusChange part
     const statusChange = (id) => {
-        axios.put(`https://admin-property.onrender.com/agent/status-change?id=${id}`).then(
+        axios.put(BASE_URL + `/agent/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                allAgent(searchagents, '', skip)
+                allAgent(searchagents, filter, '', skip);
             }
         ).catch(
             (error) => {
                 tostymsg(error.data.msg, error.data.status)
+                console.log(error);
+            }
+        )
+    }
+
+    // delete agent part
+    const deleteAgent = (id) => {
+        axios.delete(BASE_URL + `/agent/delete/${id}`).then(
+            (success) => {
+                tostymsg(success.data.msg, success.data.status)
+                allAgent(searchagents, filter, '', skip);
+            }
+        ).catch(
+            (error) => {
                 console.log(error);
             }
         )
@@ -56,6 +70,11 @@ export default function Agent() {
                         <option value="inActive">In Active</option>
                     </select>
                 </div>
+                <Link href={'agents/add-agent'}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                    Add
+                </Link>
             </div>
             <table className="min-w-full border border-gray-200 text-sm text-left mt-5">
                 <thead className="bg-gray-200 text-gray-600 uppercase ">
@@ -69,6 +88,7 @@ export default function Agent() {
                         <th className="px-4 py-2 border">status</th>
                         <th className="px-4 py-2 border">Edit</th>
                         <th className="px-4 py-2 border">Details</th>
+                        <th className="px-4 py-2 border">Delete</th>
                     </tr>
                 </thead>
                 <tbody className="text-gray-700">
@@ -99,6 +119,9 @@ export default function Agent() {
                                             <Link href={`agents/${data._id}`}>
                                                 <button className="text-blue-600 hover:underline">Details</button>
                                             </Link>
+                                        </td>
+                                        <td className="px-4 py-2 border">
+                                            <button onClick={() => deleteAgent(data._id)} className="text-blue-600 hover:underline">❌</button>
                                         </td>
                                     </tr>
                                 )
