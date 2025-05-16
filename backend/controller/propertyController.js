@@ -77,13 +77,57 @@ class propertyController {
             async (resolve, reject) => {
                 try {
                     let allProperty
-                    let conditions = [];
-                    let skip = Number(query.skip)
-                    let limit = Number(query.limit)
-                    if (query.id) {
+                    if (query) {
+                        let conditions = [];
+                        let skip = Number(query.skip)
+                        let limit = Number(query.limit)
+                        if (query.id) {
+                            allProperty = await propertyModel.aggregate([
+                                {
+                                    $match: { _id: new ObjectId(query.id) }
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'agents',
+                                        localField: 'agentId',
+                                        foreignField: '_id',
+                                        as: 'agent'
+                                    }
+                                }, {
+                                    $unwind: '$agent'
+                                }
+                            ])
+                            return resolve({
+                                msg: 'property found',
+                                status: 1,
+                                allProperty: allProperty[0]
+                            })
+                        }
+                        if (query.filter) {
+                            conditions.push({
+                                $or: [
+                                    { action: query.filter },
+                                    { status: query.filter },
+                                    { propertyType: query.filter }
+                                ]
+                            }
+                            )
+                        }
+                        if (query.searchProperty) {
+                            conditions.push({
+                                $or: [
+                                    { title: { $regex: new RegExp(query.searchProperty, 'i') } },
+                                    { category: { $regex: new RegExp(query.searchProperty, 'i') } },
+                                    { state: { $regex: new RegExp(query.searchProperty, 'i') } },
+                                    { district: { $regex: new RegExp(query.searchProperty, 'i') } }
+                                ]
+                            }
+                            )
+                        }
+                        const Property = conditions.length > 0 ? { $and: conditions } : {};
                         allProperty = await propertyModel.aggregate([
                             {
-                                $match: { _id: new ObjectId(query.id) }
+                                $match: Property
                             },
                             {
                                 $lookup: {
@@ -92,55 +136,25 @@ class propertyController {
                                     foreignField: '_id',
                                     as: 'agent'
                                 }
-                            }, {
-                                $unwind: '$agent'
-                            }
+                            },
+                            { $sort: { createdAt: -1 } },
+                            { $skip: skip },
+                            { $limit: limit }
                         ])
-                        return resolve({
-                            msg: 'property found',
-                            status: 1,
-                            allProperty: allProperty[0]
-                        })
+                        const total = await propertyModel.countDocuments(Property);
+                    } else {
+                        allProperty = await propertyModel.aggregate([
+                            {
+                                $lookup: {
+                                    from: 'agents',
+                                    localField: 'agentId',
+                                    foreignField: '_id',
+                                    as: 'agent'
+                                }
+                            },
+                            { $sort: { createdAt: -1 } },
+                        ])
                     }
-                    if (query.filter) {
-                        conditions.push({
-                            $or: [
-                                { action: query.filter },
-                                { status: query.filter },
-                                { propertyType: query.filter }
-                            ]
-                        }
-                        )
-                    }
-                    if (query.searchProperty) {
-                        conditions.push({
-                            $or: [
-                                { title: { $regex: new RegExp(query.searchProperty, 'i') } },
-                                { category: { $regex: new RegExp(query.searchProperty, 'i') } },
-                                { state: { $regex: new RegExp(query.searchProperty, 'i') } },
-                                { district: { $regex: new RegExp(query.searchProperty, 'i') } }
-                            ]
-                        }
-                        )
-                    }
-                    const Property = conditions.length > 0 ? { $and: conditions } : {};
-                    allProperty = await propertyModel.aggregate([
-                        {
-                            $match: Property
-                        },
-                        {
-                            $lookup: {
-                                from: 'agents',
-                                localField: 'agentId',
-                                foreignField: '_id',
-                                as: 'agent'
-                            }
-                        },
-                        { $sort: { createdAt: -1 } },
-                        { $skip: skip },
-                        { $limit: limit }
-                    ])
-                    const total = await propertyModel.countDocuments(Property);
                     if (!allProperty) {
                         return reject({
                             msg: 'result not found',
