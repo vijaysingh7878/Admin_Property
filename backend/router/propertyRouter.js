@@ -33,7 +33,7 @@ propertyRouter.post('/create', uploadImg.fields([
 
 // property read part
 
-propertyRouter.get('/read', authAdmin, (req, res) => {
+propertyRouter.get('/read', (req, res) => {
     const result = new propertyController().propertyRead(req.query).then(
         (success) => {
             res.send(success);
@@ -88,7 +88,7 @@ propertyRouter.patch('/edit-property/:id', async (req, res) => {
 })
 
 // statusChange part
-propertyRouter.put('/status-change', async (req, res) => {   
+propertyRouter.put('/status-change', async (req, res) => {
     const result = new propertyController().statusChange(req.query, req.body).then(
         (success) => {
             res.send(success);
