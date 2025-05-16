@@ -50,6 +50,7 @@ export default function User() {
         )
     }
 
+
     useEffect(
         () => {
             const newValue = Number(searchParams.get('skip')) || 0
@@ -66,25 +67,35 @@ export default function User() {
     return (
         <div className="w-full p-6 flex flex-col justify-between h-full">
             <div>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b">
                     <h2 className="text-xl font-bold text-gray-500">All Users</h2>
+
                     <input
                         onChange={(e) => setSearchUsers(e.target.value)}
                         type="search"
                         placeholder="Search user name or email"
-                        className="border border-black px-2 py-1 rounded outline-none"
+                        className="border border-black px-2 py-1 rounded outline-none w-full md:w-64"
+                        aria-label="Search users"
                     />
-                    <div className="flex flex-col md:flex-row justify-end gap-4">
-                        <select
-                            className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            onChange={(e) => setFilter(e.target.value)}
-                        >
-                            <option value="">All</option>
-                            <option value="active">Active</option>
-                            <option value="inActive">In Active</option>
-                        </select>
-                    </div>
+
+                    <select
+                        className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        onChange={(e) => setFilter(e.target.value)}
+                        aria-label="Filter users"
+                    >
+                        <option value="">All</option>
+                        <option value="active">Active</option>
+                        <option value="inActive">In Active</option>
+                    </select>
+
+                    <Link href={'users/add-user'}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        // onClick={handleAddUser}
+                    >
+                        Add
+                    </Link>
                 </div>
+
 
                 <table className="min-w-full border border-gray-200 text-sm text-left mt-5">
                     <thead className="bg-gray-200 text-gray-600 uppercase ">

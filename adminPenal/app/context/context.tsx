@@ -40,11 +40,7 @@ export const Context = ({ children }) => {
     // propertyShow part
     const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0) => {
 
-        await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`, {
-            headers: {
-                Authorization: `${localStorage.getItem("adminToken")}`
-            }
-        }).then(
+        await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`).then(
             (success) => {
                 setReadProperty(success.data.allProperty);
                 setTotalProperty(success.data.total)

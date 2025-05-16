@@ -103,8 +103,7 @@ export default function AdminSideBar() {
         if (success.data.status == 1) {
           dispatch(login({
             admin: success.data.admin
-          }))
-          setShowEditBtn(false);
+          }))   
           setShowPasword(false);
         }
         tostymsg(success.data.msg, success.data.status);
