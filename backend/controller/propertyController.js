@@ -77,10 +77,11 @@ class propertyController {
             async (resolve, reject) => {
                 try {
                     let allProperty
+                    let total ;
                     if (query) {
                         let conditions = [];
-                        let skip = Number(query.skip)
-                        let limit = Number(query.limit)
+                        let skip = Number(query.skip || 0)
+                        let limit = Number(query.limit || 10)
                         if (query.id) {
                             allProperty = await propertyModel.aggregate([
                                 {
@@ -141,7 +142,7 @@ class propertyController {
                             { $skip: skip },
                             { $limit: limit }
                         ])
-                        const total = await propertyModel.countDocuments(Property);
+                        total = await propertyModel.countDocuments(Property);
                     } else {
                         allProperty = await propertyModel.aggregate([
                             {
@@ -154,6 +155,7 @@ class propertyController {
                             },
                             { $sort: { createdAt: -1 } },
                         ])
+                        total = await propertyModel.countDocuments();
                     }
                     if (!allProperty) {
                         return reject({
