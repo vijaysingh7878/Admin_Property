@@ -12,7 +12,7 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    const BASE_URL = 'http://localhost:5001'
+    const BASE_URL = 'https://admin-property-pied.vercel.app'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
@@ -27,6 +27,7 @@ export const Context = ({ children }) => {
     const [totalAgents, setTotalAgents] = useState();
     const [request, setRequest] = useState();
     const [blog, setBlog] = useState();
+    const [banner, setBanner] = useState();
     const [chat, setChat] = useState();
     const [limit, setLimit] = useState(10);
     const [skip, setSkip] = useState();
@@ -115,6 +116,20 @@ export const Context = ({ children }) => {
             }
         )
     }
+
+    // view banner part
+    const viewBanner = () => {
+        axios.get(BASE_URL + `/banner/read`).then(
+            (success) => {
+                setBanner(success.data.allBanner)
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
+            }
+        )
+    }
+
     // viewChat part
     const viewChat = (id = '') => {
         axios.get(BASE_URL + `/chat/read`).then(
@@ -171,7 +186,7 @@ export const Context = ({ children }) => {
     if (!admin && pathname !== "/login") return null;
 
     return (
-        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating }}>
+        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating,viewBanner,banner }}>
             <>
                 {admin && pathname != "/login" ? (
                     <div className="flex">

@@ -6,7 +6,7 @@ import { FaUserAlt } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { SiMainwp } from "react-icons/si";
 import { IoMdSettings } from "react-icons/io";
-import { FaMicroblog } from "react-icons/fa";
+import { FaMicroblog, FaImages } from "react-icons/fa";
 import { VscGitPullRequestNewChanges } from "react-icons/vsc";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -37,6 +37,11 @@ export default function AdminSideBar() {
       name: "Dashboard",
       icon: <RiSlideshowFill size={18} />,
       slug: "",
+    },
+    {
+      name: "Banner Image",
+      icon: <FaImages size={18} />,
+      slug: "banner-image",
     },
     {
       name: "Users",
@@ -103,7 +108,7 @@ export default function AdminSideBar() {
         if (success.data.status == 1) {
           dispatch(login({
             admin: success.data.admin
-          }))   
+          }))
           setShowPasword(false);
         }
         tostymsg(success.data.msg, success.data.status);
