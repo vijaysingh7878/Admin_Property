@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const userModel = require("../model/userModel");
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const agentModel = require("../model/agentModel");
+const { tokenGenerate } = require("../helping");
 
 class userController {
 
@@ -26,7 +28,7 @@ class userController {
                             (error) => {
                                 console.log(error);
                                 reject({
-                                    msg: "user not created due to img error",
+                                    msg: "user not created",
                                     status: 0
                                 })
                             }
@@ -269,33 +271,41 @@ class userController {
     async loginUser(data) {
         try {
             const user = await userModel.findOne({ email: data.email });
-            if (user) {
-                const passwordMatch = await bcrypt.compare(data.password, user.password);
-                if (passwordMatch) {
-                    return {
-                        msg: 'login successfully',
-                        status: 1,
-                        user: { ...user.toJSON(), password: null },
-                        userToken: tokenGenerate(user.toJSON())
-                    }
-                } else {
-                    return {
-                        msg: 'Please enter vaild password',
-                        status: 0
-                    }
-                }
-            } else {
+            const agent = user ? null : await agentModel.findOne({ email: data.email });
+
+            const account = user || agent;
+
+            if (!account) {
                 return {
-                    msg: 'Please enter vaild email',
+                    msg: 'Please enter a valid email',
                     status: 0
-                }
+                };
             }
+
+            const passwordMatch = await bcrypt.compare(data.password, account.password);
+
+            if (!passwordMatch) {
+                return {
+                    msg: 'Please enter a valid password',
+                    status: 0
+                };
+            }
+
+            const userType = user ? 'user' : 'agent';
+
+            return {
+                msg: 'Login successful',
+                status: 1,
+                userType,
+                user: { ...account.toJSON(), password: null },
+                userToken: tokenGenerate(account.toJSON())
+            };
         } catch (error) {
             console.error("Login error:", error);
             return {
                 msg: 'Internal server error',
                 status: 0
-            }
+            };
         }
     }
 
@@ -327,6 +337,49 @@ class userController {
                             msg: 'User not found',
                             status: 0
                         })
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+
+    // like part
+    addToLike(data) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const userId = new mongoose.Types.ObjectId(data.userId)
+                    const propertyId = new mongoose.Types.ObjectId(data.propertyId)
+                    const like_Property = await userModel.findOne({
+                        _id: userId,
+                        likedProperties: propertyId
+                    })
+                    if (like_Property) {
+                        return (reject({
+                            msg: 'Already added',
+                            status: 0
+                        }))
+                    } else {
+                        await userModel.updateOne(
+                            {
+                                _id: userId,
+                            }, {
+                            $push: {
+                                likedProperties: propertyId
+                            }
+                        }
+                        )
+                        return (resolve({
+                            msg: 'Add to like',
+                            status: 1
+                        }))
                     }
 
                 } catch (error) {

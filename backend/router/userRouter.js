@@ -93,7 +93,7 @@ userRouter.post('/login', async (req, res) => {
 })
 
 // delete user part 
-userRouter.delete('/delete/:id', (req, res) => {    
+userRouter.delete('/delete/:id', (req, res) => {
     const result = new userController().userDelete(req.params.id).then(
         (success) => {
             res.send(success);
@@ -104,5 +104,23 @@ userRouter.delete('/delete/:id', (req, res) => {
         }
     )
 })
+
+// like property part 
+userRouter.post(
+    '/add-to-like',
+    (req, res) => {
+        const result = new userController().addToLike(req.body);
+        result.then(
+            (success) => {
+                res.send(success);
+            }
+        ).catch(
+            (error) => {
+                res.send(error);
+            }
+        )
+    }
+)
+
 
 module.exports = userRouter;
