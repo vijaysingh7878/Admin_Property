@@ -113,6 +113,7 @@ const AdminDashboard = () => {
       },
     ],
   };
+
   const propertyData = {
     labels: ['Property'],
     datasets: [
@@ -124,6 +125,7 @@ const AdminDashboard = () => {
       },
     ],
   };
+
   const agentData = {
     labels: ['Agent'],
     datasets: [
@@ -135,6 +137,7 @@ const AdminDashboard = () => {
       },
     ],
   };
+
   const reqData = {
     labels: ['Request'],
     datasets: [
@@ -158,23 +161,23 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     allUser();
-  }, [users]);
+  }, []);
 
   useEffect(() => {
     propertyShow();
-  }, [readProperty]);
+  }, []);
 
   useEffect(() => {
     allAgent();
-  }, [agents]);
+  }, []);
 
   useEffect(() => {
     requestView();
-  }, [request]);
+  }, []);
 
   useEffect(() => {
     viewBlog();
-  }, [blog]);
+  }, []);
 
 
 
