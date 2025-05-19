@@ -50,8 +50,8 @@ app.use(cors({
 app.use(express.json())
 app.use('/property', propertyRouter);
 app.use('/user', userRouter);
-app.use('/agent', agentRouter);
-app.use('/admin', adminRouter);
+// app.use('/agent', agentRouter);
+// app.use('/admin', adminRouter);
 app.use('/blog', blogRouter);
 app.use('/req', reqRouter);
 app.use('/chat', chatRouter);

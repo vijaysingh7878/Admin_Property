@@ -15,13 +15,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "@/redux/reducer/AdminSlice";
 import { MdLogout } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { MainContext } from "../context/context";
 import axios from "axios";
 
 export default function AdminSideBar() {
   const { BASE_URL, tostymsg } = useContext(MainContext);
   const admin = useSelector(state => state.admin.data);
+  const mailValue = useRef()
 
   const pathname = usePathname();
   const router = useRouter()
@@ -99,17 +100,20 @@ export default function AdminSideBar() {
       formData.append('location', e.target.location.value);
     }
 
-    axios.patch(BASE_URL + `/admin/admin-update/${admin._id}`, formData, {
+    axios.patch(BASE_URL + `/user/user-update/${admin._id}`, formData, {
       headers: {
         Authorization: `${localStorage.getItem("adminToken")}`
       }
     }).then(
       (success) => {
+        console.log(success.data);
+        
         if (success.data.status == 1) {
           dispatch(login({
-            admin: success.data.admin
+            admin: success.data.user
           }))
           setShowPasword(false);
+          setShowEditBtn(false);
         }
         tostymsg(success.data.msg, success.data.status);
       }
@@ -127,7 +131,7 @@ export default function AdminSideBar() {
 
   // email part
   const emailOtpGen = () => {
-    const Email = 'vijaysingh@7unique.in'
+    const Email = admin.email
     setShowOtp(true)
     axios.post(BASE_URL + `/mail/otp-send`, { Email }).then(
       (success) => {
@@ -166,7 +170,7 @@ export default function AdminSideBar() {
       <div>
         <div className="flex justify-center mb-2 border-b border-gray-200 pt-3">
           <Image
-            src={logo}
+            src={logo || 'logo'}
             alt="logo"
             width={120}
             height={80}
@@ -235,7 +239,7 @@ export default function AdminSideBar() {
             {
               admin?.profile_Photo ? (
                 <Image
-                  src={admin?.profile_Photo}
+                  src={admin?.profile_Photo || 'profile phot'}
                   alt={`${admin?.name} profile photo`}
                   width={64}
                   height={64}
@@ -429,7 +433,7 @@ export default function AdminSideBar() {
                 <div className="flex flex-col items-center text-center bg-white p-6 rounded-xl w-full max-w-md mx-auto space-y-4 transition-all">
                   <div className="w-28 h-28 relative">
                     <Image
-                      src={admin?.profile_Photo}
+                      src={admin?.profile_Photo || 'profile phot'}
                       alt="Admin profile"
                       fill
                       className="rounded-full object-cover shadow-md"

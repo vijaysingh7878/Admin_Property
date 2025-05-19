@@ -13,9 +13,9 @@ class ReqController {
                     status: 0
                 };
             }
-
+    
             const requestType = data.requestType || 'visit';
-
+    
             const user = await userModel.findById(user_Id);
             if (!user) {
                 return {
@@ -23,7 +23,7 @@ class ReqController {
                     status: 0
                 };
             }
-
+    
             const property = await propertyModel.findById(data.property_Id);
             if (!property) {
                 return {
@@ -31,20 +31,20 @@ class ReqController {
                     status: 0
                 };
             }
-
+    
             const existedReq = await reqModel.findOne({
                 user_Id: user_Id,
                 property_Id: data.property_Id
             });
-
+    
             if (existedReq) {
-                if (existedReq.requestType == 'visit' && requestType == 'visit') {
+                if (existedReq.requestType === 'visit' && requestType === 'visit') {
                     return {
                         msg: 'Already visited',
                         status: 0
                     };
                 }
-
+    
                 if (existedReq.requestType === 'visit' && requestType === 'buy') {
                     await reqModel.updateOne(
                         {
@@ -60,31 +60,35 @@ class ReqController {
                         status: 1
                     };
                 }
-
+    
                 if (existedReq.requestType === 'buy' && requestType === 'buy') {
                     return {
                         msg: 'You already have a buy request for this property',
                         status: 0
                     };
                 }
+    
                 return {
                     msg: 'You already have a request for this property',
                     status: 0
                 };
             }
+    
             const newRequest = new reqModel({
                 user_Id: user_Id,
                 property_Id: data.property_Id,
-                requestType: requestType
+                propertyOwnerId: property.user_Id, 
+                requestType: requestType,
+                message: data.message || ''
             });
-
+    
             await newRequest.save();
-
+    
             return {
-                msg: `${requestType == 'buy' ? 'Buy' : 'Visit'} request created successfully`,
+                msg: `${requestType === 'buy' ? 'Buy' : 'Visit'} request created successfully`,
                 status: 1
             };
-
+    
         } catch (error) {
             console.error(error);
             return {
@@ -93,6 +97,8 @@ class ReqController {
             };
         }
     }
+    
+    
 
     // read req part
     async readReq(query) {
@@ -119,7 +125,7 @@ class ReqController {
                     },
                     {
                         $lookup: {
-                            from: 'users',
+                            from: 'user',
                             localField: 'user_Id',
                             foreignField: '_id',
                             as: 'user'
@@ -134,16 +140,7 @@ class ReqController {
                             as: 'property'
                         }
                     },
-                    { $unwind: '$property' },
-                    {
-                        $lookup: {
-                            from: 'agents',
-                            localField: 'property.agentId',
-                            foreignField: '_id',
-                            as: 'agent'
-                        }
-                    },
-                    { $unwind: '$agent' }
+                    { $unwind: '$property' }
                 ])
                 return (
                     {
@@ -156,7 +153,7 @@ class ReqController {
             const request = await reqModel.aggregate([
                 {
                     $lookup: {
-                        from: 'users',
+                        from: 'user',
                         localField: 'user_Id',
                         foreignField: '_id',
                         as: 'user'
@@ -171,16 +168,7 @@ class ReqController {
                         as: 'property'
                     }
                 },
-                { $unwind: '$property' },
-                {
-                    $lookup: {
-                        from: 'agents',
-                        localField: 'property.agentId',
-                        foreignField: '_id',
-                        as: 'agent'
-                    }
-                },
-                { $unwind: '$agent' }
+                { $unwind: '$property' }
             ])
             return (
                 {

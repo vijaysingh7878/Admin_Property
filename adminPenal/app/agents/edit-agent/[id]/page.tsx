@@ -4,20 +4,20 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from "react";
 
-export default function EditAgents({ params }) {
+export default function Editusers({ params }) {
     const { id } = use(params)
-    const { BASE_URL, tostymsg, allAgent, agents } = useContext(MainContext);
+    const { BASE_URL, tostymsg, allUser, users } = useContext(MainContext);
     const [selectImg, setSelectImg] = useState(null)
     const router = useRouter();
-
+    const role = 'agent'
 
     // remove profile photo start
     const removeProfilePhoto = () => {
-        if (agents?.profile_Photo) {
-            axios.put(BASE_URL + `/agent/remove-profile?id=${id}`).then(
+        if (users?.profile_Photo) {
+            axios.put(BASE_URL + `/user/remove-profile?id=${id}`).then(
                 (success) => {
                     tostymsg(success.data.msg, success.data.status)
-                    allAgent('', id)
+                    allUser('', '', '', id, role);
                 }
             ).catch(
                 (error) => {
@@ -31,11 +31,11 @@ export default function EditAgents({ params }) {
     }
     useEffect(
         () => {
-            allAgent('', '', id, '');
+            allUser('', '', '', id, role);
         }, [id]
     )
-    // agents update part
-    const agentsEditHendler = (e) => {
+    // users update part
+    const usersEditHendler = (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('name', e.target.name.value)
@@ -47,7 +47,7 @@ export default function EditAgents({ params }) {
         formData.append('location', e.target.location.value)
         formData.append('company', e.target.company.value)
 
-        axios.patch(BASE_URL + `/agent/agent-update/${id}`, formData).then(
+        axios.patch(BASE_URL + `/user/user-update/${id}`, formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 router.push('/agents')
@@ -60,7 +60,7 @@ export default function EditAgents({ params }) {
         )
     }
     return (
-        <form onSubmit={agentsEditHendler}
+        <form onSubmit={usersEditHendler}
             className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md space-y-6"
         >
             <h2 className="text-2xl font-semibold text-gray-700">Edit</h2>
@@ -68,14 +68,14 @@ export default function EditAgents({ params }) {
             <div className="flex flex-col items-center">
                 <input
                     type="file"
-                    id="profilePhoto"
-                    name="profilePhoto"
+                    id="profile_Photo"
+                    name="profile_Photo"
                     accept="image/*"
                     onChange={(e) => setSelectImg(URL.createObjectURL(e.target.files[0]))}
                     className="mt-1 w-full text-sm text-gray-500 hidden"
                 />
-                <label htmlFor="profilePhoto" className="relative text-center">
-                    <img src={selectImg ? selectImg : agents?.profile_Photo} alt="Photo" className="w-28 h-28 cursor-pointer rounded-full object-cover border" />
+                <label htmlFor="profile_Photo" className="relative text-center">
+                    <img src={selectImg ? selectImg : users?.profile_Photo} alt="Photo" className="w-28 h-28 cursor-pointer rounded-full object-cover border" />
                     <span className="absolute top-0 left-0 bg-black w-full min-h-full text-white opacity-0 hover:opacity-45 rounded-full duration-300 cursor-pointer flex justify-center items-center font-bold">Edit</span>
                 </label>
                 <span className="text-red-400 hover:text-red-500 mt-2 cursor-pointer" onClick={() => removeProfilePhoto()}>remove</span>
@@ -86,7 +86,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="text"
                     name="name"
-                    defaultValue={agents?.name}
+                    defaultValue={users?.name}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -97,7 +97,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="tel"
                     name="phone"
-                    defaultValue={agents?.phone}
+                    defaultValue={users?.phone}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -108,7 +108,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="email"
                     name="email"
-                    defaultValue={agents?.email}
+                    defaultValue={users?.email}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -118,7 +118,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="company"
                     name="company"
-                    defaultValue={agents?.company}
+                    defaultValue={users?.company}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />
@@ -129,7 +129,7 @@ export default function EditAgents({ params }) {
                 <input
                     type="text"
                     name="location"
-                    defaultValue={agents?.location}
+                    defaultValue={users?.location}
                     required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                 />

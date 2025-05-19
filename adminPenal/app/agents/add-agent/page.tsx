@@ -18,8 +18,9 @@ const AddAgentForm = () => {
         formData.append('email', e.target.email.value)
         formData.append('location', e.target.location.value)
         formData.append('company', e.target.company.value)
+        formData.append('role', e.target.role.value)
 
-        await axios.post(BASE_URL + '/agent/create', formData).then(
+        await axios.post(BASE_URL + '/user/create', formData).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 if (success.data.status == 1) {
@@ -80,6 +81,12 @@ const AddAgentForm = () => {
                     type="password"
                     name="password"
                     placeholder="Password"
+                    className="border p-2 rounded"
+                />
+                <input
+                    type="text"
+                    name="role"
+                    placeholder="role"
                     className="border p-2 rounded"
                 />
                 <button

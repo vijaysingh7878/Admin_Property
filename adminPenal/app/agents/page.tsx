@@ -7,23 +7,22 @@ import Pagination from "../componants/Pagination";
 import { useSearchParams } from "next/navigation";
 
 export default function Agent() {
-    const { BASE_URL, tostymsg, allAgent, agents, totalAgents, limit, skip, setSkip } = useContext(MainContext);
-    const [searchagents, setSearchagents] = useState(null)
+    const { BASE_URL, tostymsg, allUser, users, totalusers, limit, skip, setSkip } = useContext(MainContext);
+    const [searchusers, setSearchusers] = useState(null)
     const searchParams = useSearchParams()
     const [filter, setFilter] = useState('')
-
+    const role = 'agent'
 
 
     // statusChange part
     const statusChange = (id) => {
-        axios.put(BASE_URL + `/agent/status-change?id=${id}`).then(
+        axios.put(BASE_URL + `/user/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                allAgent(searchagents, filter, '', skip);
+                allUser(searchusers, filter, skip, '', role);
             }
         ).catch(
             (error) => {
-                tostymsg(error.data.msg, error.data.status)
                 console.log(error);
             }
         )
@@ -31,10 +30,11 @@ export default function Agent() {
 
     // delete agent part
     const deleteAgent = (id) => {
-        axios.delete(BASE_URL + `/agent/delete/${id}`).then(
+        axios.delete(BASE_URL + `/user/delete/${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                allAgent(searchagents, filter, '', skip);
+                allUser(searchusers, filter, skip, '', role);
+
             }
         ).catch(
             (error) => {
@@ -47,15 +47,15 @@ export default function Agent() {
         () => {
             const newValue = Number(searchParams.get('skip')) || 0
             setSkip(newValue)
-            allAgent(searchagents, filter, '', newValue);
-        }, [searchagents, filter, skip]
+            allUser(searchusers, filter, newValue, '', role);
+        }, [searchusers, filter, skip]
     )
     return (
         <div className="w-full p-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold  text-gray-500">All Agents</h2>
                 <input
-                    onChange={(e) => setSearchagents(e.target.value)}
+                    onChange={(e) => setSearchusers(e.target.value)}
                     type="search"
                     placeholder="Search agent name or email"
                     className="border border-black px-2 py-1 rounded outline-none"
@@ -92,8 +92,8 @@ export default function Agent() {
                     </tr>
                 </thead>
                 <tbody className="text-gray-700">
-                    {Array.isArray(agents) &&
-                        agents?.map(
+                    {Array.isArray(users) &&
+                        users?.map(
                             (data, index) => {
                                 return (
                                     <tr key={index} className="hover:bg-gray-50">
@@ -130,7 +130,7 @@ export default function Agent() {
                     }
                 </tbody>
             </table>
-            <Pagination total={totalAgents} limit={limit} skip={skip} value={'agents'} />
+            <Pagination total={totalusers} limit={limit} skip={skip} value={'users'} />
 
         </div>
     )

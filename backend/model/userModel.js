@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
     {
+        role: {
+            type: String,
+            enum: ['user', 'agent','admin'],
+            default: 'user'
+        },
         name: {
             type: String,
             required: true
@@ -10,13 +15,16 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
-            minlength: 6 
+            minlength: 6
         },
         phone: String,
         email: {
             type: String,
             required: true,
             trim: true
+        },
+        company: {
+            type: String,
         },
         status: {
             type: Boolean,
@@ -33,6 +41,19 @@ const userSchema = new mongoose.Schema(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'property'
+            }
+        ],
+        property: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'property',
+                require: true
+            }
+        ],
+        rating: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'rating'
             }
         ]
     },

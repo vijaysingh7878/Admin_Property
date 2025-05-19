@@ -14,6 +14,9 @@ const propertySchema = new mongoose.Schema(
         city: {
             type: String
         },
+        address: {
+            type: String
+        },
         area: {
             type: String
         },
@@ -39,9 +42,9 @@ const propertySchema = new mongoose.Schema(
         long_description: {
             type: String
         },
-        agentId: {
+        user_Id: {
             type: mongoose.Schema.ObjectId,
-            ref: 'agent',
+            ref: 'user',
             require: true
         },
         action: {
@@ -52,6 +55,7 @@ const propertySchema = new mongoose.Schema(
         status: {
             type: String,
             enum: ['available', 'sold', 'soon'],
+            default: 'available'
         }
     },
     {

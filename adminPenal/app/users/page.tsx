@@ -15,7 +15,7 @@ export default function User() {
     const [viewUser, setViewUser] = useState(false);
     const [userDetails, setUserDetails] = useState(false);
     const searchParams = useSearchParams()
-
+    const role = 'user'
 
     const viewUserHendler = (id) => {
         axios.get(BASE_URL + `/user/read?id=${id}`, {
@@ -40,7 +40,7 @@ export default function User() {
         axios.put(BASE_URL + `/user/status-change?id=${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                allUser(searchUsers, filter, skip)
+                allUser(searchUsers, filter, skip, '', role);
             }
         ).catch(
             (error) => {
@@ -54,7 +54,8 @@ export default function User() {
         axios.delete(BASE_URL + `/user/delete/${id}`).then(
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
-                allUser(searchUsers, filter, skip)
+                allUser(searchUsers, filter, skip, '', role);
+
             }
         ).catch(
             (error) => {
@@ -74,7 +75,7 @@ export default function User() {
 
     useEffect(
         () => {
-            allUser(searchUsers, filter, skip);
+            allUser(searchUsers, filter, skip, '', role);
         }, [searchUsers, filter, skip]
     )
     return (

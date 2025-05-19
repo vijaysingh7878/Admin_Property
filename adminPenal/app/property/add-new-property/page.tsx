@@ -1,14 +1,13 @@
 'use client'
 import { MainContext } from "@/app/context/context";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import Select from 'react-select';
+import { useContext, useEffect, useState } from "react";
 
 export default function newPropertyAdd() {
-    const { BASE_URL, tostymsg } = useContext(MainContext);
+    const { BASE_URL, tostymsg, users, allUser } = useContext(MainContext);
     const [showImg, setShowImg] = useState('')
 
-    const router = useRouter();
     const formHendler = (event) => {
         event.preventDefault();
         console.log(event.target.elements.propertyType.value);
@@ -25,12 +24,13 @@ export default function newPropertyAdd() {
         }
 
         formData.append('title', event.target.title.value);
-        formData.append('agentId', event.target.agentId.value);
+        formData.append('user_Id', event.target.user_Id.value);
         formData.append('mainImage', event.target.image.files[0] ?? null);
         formData.append('category', event.target.category.value);
+        formData.append('area', event.target.area.value);
         formData.append('propertyType', event.target.elements.propertyType.value);
         formData.append('price', event.target.price.value);
-        formData.append('area', event.target.area.value);
+        formData.append('address', event.target.address.value);
         formData.append('city', event.target.city.value);
         formData.append('state', event.target.state.value);
         formData.append('short_description', event.target.short_description.value);
@@ -51,6 +51,11 @@ export default function newPropertyAdd() {
             }
         )
     }
+    useEffect(
+        () => {
+            allUser()
+        }, []
+    )
     return (
         <>
             <form action="" className="bg-gray-200 w-2/3 mx-auto p-6 rounded shadow" onSubmit={formHendler}>
@@ -59,9 +64,10 @@ export default function newPropertyAdd() {
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="title">Title</label>
                     <div className="flex gap-2">
-                        <input type="text" id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
-                        <input type="text" id="agentId" name="agentId" className="w-full border-2 rounded px-3 py-2" placeholder="Enter agentId" />
-
+                        <input type="text" id="title" name="title" className=" border-2 rounded px-3 py-2" placeholder="Enter title" />
+                        <Select name="user_Id" options={users?.map((data, index) => {
+                            return { value: data._id, label: data.name }
+                        })} />
                     </div>
                 </div>
 
@@ -97,6 +103,10 @@ export default function newPropertyAdd() {
                 </div>
 
                 <div className="mb-4">
+                    <label className="mb-1 font-medium" htmlFor="area">Area</label>
+                    <input type="text" id="area" name="area" className="w-full border-2 rounded px-3 py-2" placeholder="Enter area" />
+                </div>
+                <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="price">Price</label>
                     <input type="text" id="price" name="price" className="w-full border-2 rounded px-3 py-2" placeholder="Enter price" />
                 </div>
@@ -104,7 +114,7 @@ export default function newPropertyAdd() {
                 <div className="mb-6">
                     <label className="mb-1 font-medium" htmlFor="location">Location</label>
                     <div className="flex gap-2">
-                        <input type="text" id="area" name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
+                        <input type="text" id="address" name="address" className="border-2 rounded px-3 py-2" placeholder="Enter address" />
                         <input type="text" id="city" name="city" className="border-2 rounded px-3 py-2" placeholder="Enter city" />
                         <input type="text" id="state" name="state" className="border-2 rounded px-3 py-2" placeholder="Enter state" />
                     </div>

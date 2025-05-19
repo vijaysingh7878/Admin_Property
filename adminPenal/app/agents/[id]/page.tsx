@@ -5,14 +5,14 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
-export default function agents() {
+export default function users() {
     const { id } = useParams()
-    const { allAgent, agents, rating, averageRating } = useContext(MainContext)
+    const { users, allUser, rating, averageRating } = useContext(MainContext)
 
     useEffect(
         () => {
             if (id) {
-                allAgent(null, null, id)
+                allUser('', '', '', id);
                 rating(id)
             }
         }, [id]
@@ -23,17 +23,17 @@ export default function agents() {
             <div className="w-full p-4">
                 <div className="flex justify-between items-start bg-white p-6 rounded-lg shadow-md">
                     <div>
-                        <h2 className="text-2xl font-semibold mb-2">{agents?.name}</h2>
-                        <h2 className="text-md font-semibold mb-2 text-red-300">[ {agents?.company}]</h2>
-                        <p className="mb-1"><strong>Email:</strong> {agents?.email}</p>
-                        <p><strong>Phone:</strong> {agents?.phone}</p>
+                        <h2 className="text-2xl font-semibold mb-2">{users?.name}</h2>
+                        <h2 className="text-md font-semibold mb-2 text-red-300">[ {users?.company}]</h2>
+                        <p className="mb-1"><strong>Email:</strong> {users?.email}</p>
+                        <p><strong>Phone:</strong> {users?.phone}</p>
                         <span className="text-gray-400 text-sm bg-green-200 p-1">Rating: {averageRating || '-'}</span>
                     </div>
 
                     <div className="w-20 h-20 relative rounded-full overflow-hidden border border-gray-300">
                         <Image
-                            src={agents?.profile_Photo || 'agent'}
-                            alt={agents?.name || 'Profile Photo'}
+                            src={users?.profile_Photo || 'agent'}
+                            alt={users?.name || 'Profile Photo'}
                             layout="fill"
                             objectFit="cover"
                         />
@@ -43,8 +43,8 @@ export default function agents() {
                 <h3 className="text-xl font-semibold mt-6 mb-4">Properties Added</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {
-                        agents?.property?.length > 0 ? (
-                            agents?.property.map((property, index) => (
+                        users?.property?.length > 0 ? (
+                            users?.property.map((property, index) => (
                                 <div
                                     key={index}
                                     className="bg-white p-4 rounded shadow-md hover:shadow-lg transition duration-200"

@@ -1,14 +1,17 @@
 'use client'
 import { MainContext } from "@/app/context/context";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from "react";
+import Select from 'react-select';
 
 export default function EditProperty({ params }) {
     const { id } = use(params);
-    const { BASE_URL, tostymsg, propertyShow, readProperty } = useContext(MainContext)
+    const { BASE_URL, tostymsg, propertyShow, readProperty, users, allUser } = useContext(MainContext)
     const [showImg, setShowImg] = useState('')
     const router = useRouter();
+    console.log(readProperty);
 
     // updateForm part
     const updateForm = (event) => {
@@ -24,14 +27,15 @@ export default function EditProperty({ params }) {
             }
         }
         formData.append('title', event.target.title.value);
-        formData.append('agentId', event.target.agentId.value);
+        formData.append('user_Id', event.target.user_Id.value || readProperty?.user._id);
         if (event.target.image.files[0]) {
             formData.append('mainImage', event.target.image.files[0]);
         }
         formData.append('category', event.target.category.value);
         formData.append('propertyType', event.target.elements.propertyType.value);
-        formData.append('price', event.target.price.value);
         formData.append('area', event.target.area.value);
+        formData.append('price', event.target.price.value);
+        formData.append('address', event.target.address.value);
         formData.append('city', event.target.city.value);
         formData.append('state', event.target.state.value);
         formData.append('short_description', event.target.short_description.value);
@@ -50,7 +54,7 @@ export default function EditProperty({ params }) {
             }
         )
     }
-    
+
     const deleteOtherImg = (url) => {
         axios.patch(BASE_URL + `/property/edit-property/${id}`, { url }).then(
             (success) => {
@@ -65,20 +69,33 @@ export default function EditProperty({ params }) {
     }
     useEffect(
         () => {
+            allUser()
+        }, []
+    )
+
+    useEffect(
+        () => {
             propertyShow('', '', id)
         }, [id]
     )
     return (
         <>
             <form action="" className="bg-gray-200 w-2/3 mx-auto p-6 rounded shadow" onSubmit={updateForm}>
+                <button>
+                    <Link href="/property" className="flex items-center gap-2 hover:underline py-3">
+                        ← Back
+                    </Link>
+                </button>
                 <h2 className="text-2xl font-semibold mb-6">Edit Property</h2>
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="title">Title</label>
 
                     <div className="flex gap-2">
-                        <input type="text" defaultValue={readProperty?.title} id="title" name="title" className="w-full border-2 rounded px-3 py-2" placeholder="Enter title" />
-                        <input type="text" defaultValue={readProperty?.agentId} id="agentId" name="agentId" className="w-full border-2 rounded px-3 py-2" placeholder="Enter agentId" />
+                        <input type="text" defaultValue={readProperty?.title} id="title" name="title" className="border-2 rounded px-3 py-2" placeholder="Enter title" />
+                        <Select name="user_Id" options={users?.map((data, index) => {
+                            return { value: data._id, label: data.name }
+                        })} />
                     </div>
                 </div>
 
@@ -124,7 +141,7 @@ export default function EditProperty({ params }) {
                             defaultValue={readProperty?.propertyType}
                             className="w-full md:w-48 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                         >
-                            <option value="">--</option>
+                            <option value={readProperty?.propertyType}>--</option>
                             <option value="buy">Buy</option>
                             <option value="sell">Sell</option>
                             <option value="rent">Rent</option>
@@ -133,6 +150,10 @@ export default function EditProperty({ params }) {
                 </div>
 
                 <div className="mb-4">
+                    <label className="mb-1 font-medium" htmlFor="area">Area</label>
+                    <input type="text" id="area" defaultValue={readProperty?.area} name="area" className="w-full border-2 rounded px-3 py-2" placeholder="Enter area" />
+                </div>
+                <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="price">Price</label>
                     <input type="text" id="price" defaultValue={readProperty?.price} name="price" className="w-full border-2 rounded px-3 py-2" placeholder="Enter price" />
                 </div>
@@ -140,7 +161,7 @@ export default function EditProperty({ params }) {
                 <div className="mb-6">
                     <label className="mb-1 font-medium" htmlFor="location">Location</label>
                     <div className="flex gap-2">
-                        <input type="text" id="area" defaultValue={readProperty?.area} name="area" className="border-2 rounded px-3 py-2" placeholder="Enter area" />
+                        <input type="text" id="address" defaultValue={readProperty?.address} name="address" className="border-2 rounded px-3 py-2" placeholder="Enter address" />
                         <input type="text" id="city" defaultValue={readProperty?.city} name="city" className="border-2 rounded px-3 py-2" placeholder="Enter city" />
                         <input type="text" id="state" defaultValue={readProperty?.state} name="state" className="border-2 rounded px-3 py-2" placeholder="Enter state" />
                     </div>

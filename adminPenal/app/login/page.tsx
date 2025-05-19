@@ -31,12 +31,12 @@ export default function Login() {
       password: e.target.password.value
     };
 
-    axios.post(`${BASE_URL}/admin/login`, data)
+    axios.post(`${BASE_URL}/user/adminLogin`, data)
       .then((res) => {
         if (res.data.status === 1) {
           dispatch(login({
-            admin: res.data.admin,
-            adminToken: res.data.adminToken
+            admin: res.data.user,
+            adminToken: res.data.userToken
           }));
           router.push('/');
         }
@@ -71,7 +71,7 @@ export default function Login() {
   };
 
   const handlePasswordUpdate = () => {
-    axios.post(`${BASE_URL}/admin/password`, {
+    axios.post(`${BASE_URL}/user/password`, {
       email,
       new_password: newPassword
     })

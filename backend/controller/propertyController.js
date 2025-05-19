@@ -1,6 +1,6 @@
-const agentModel = require("../model/agentModel");
+const mongoose = require("mongoose");
 const propertyModel = require("../model/propertyModel");
-const { ObjectId } = require('mongoose').Types;
+const userModel = require("../model/userModel");
 
 
 class propertyController {
@@ -9,11 +9,9 @@ class propertyController {
         return new Promise(
             async (resolve, reject) => {
                 try {
-                    const agent = await agentModel.findById(data.agentId);
-                    if (agent) {
+                    const user = await userModel.findById(data.user_Id);
+                    if (user) {
                         let newProperty;
-                        console.log(file);
-
                         if (file) {
                             let maltipleImage = [];
                             for (var otherImg of file.maltipleImage) {
@@ -29,7 +27,7 @@ class propertyController {
 
                             newProperty.save().then(
                                 async () => {
-                                    await agentModel.updateOne(
+                                    await userModel.updateOne(
                                         {
                                             _id: data.agentId
                                         },
@@ -56,7 +54,7 @@ class propertyController {
                         }
                     } else {
                         reject({
-                            msg: 'Agent not found',
+                            msg: 'user not found',
                             status: 0
                         })
                     }
@@ -73,6 +71,8 @@ class propertyController {
 
     // property read part
     propertyRead(query) {
+        console.log(query);
+
         return new Promise(
             async (resolve, reject) => {
                 try {
@@ -85,17 +85,17 @@ class propertyController {
                         if (query.id) {
                             allProperty = await propertyModel.aggregate([
                                 {
-                                    $match: { _id: new ObjectId(query.id) }
+                                    $match: { _id: new mongoose.Types.ObjectId(query.id) }
                                 },
                                 {
                                     $lookup: {
-                                        from: 'agents',
-                                        localField: 'agentId',
+                                        from: 'users',
+                                        localField: 'user_Id',
                                         foreignField: '_id',
-                                        as: 'agent'
+                                        as: 'user'
                                     }
                                 }, {
-                                    $unwind: '$agent'
+                                    $unwind: '$user'
                                 }
                             ])
                             return resolve({
@@ -132,11 +132,15 @@ class propertyController {
                             },
                             {
                                 $lookup: {
-                                    from: 'agents',
-                                    localField: 'agentId',
+                                    from: 'users',
+                                    localField: 'user_Id',
                                     foreignField: '_id',
-                                    as: 'agent'
+                                    as: 'user'
                                 }
+
+                            },
+                            {
+                                $unwind: '$user'
                             },
                             { $sort: { createdAt: -1 } },
                             { $skip: skip },
@@ -147,10 +151,10 @@ class propertyController {
                         allProperty = await propertyModel.aggregate([
                             {
                                 $lookup: {
-                                    from: 'agents',
-                                    localField: 'agentId',
+                                    from: 'users',
+                                    localField: 'user_Id',
                                     foreignField: '_id',
-                                    as: 'agent'
+                                    as: 'user'
                                 }
                             },
                             { $sort: { createdAt: -1 } },
@@ -224,13 +228,14 @@ class propertyController {
     }
 
     // propertyEdit part
-    async propertyEdit(data, file, id) {
+    async propertyEdit(data, file, Id) {
         try {
-            let updateData = { ...data };
+            const id = new mongoose.Types.ObjectId(Id)
 
+            let updateData = { ...data };
             if (file) {
                 if (file.mainImage) {
-                    updateData.mainImage = file.mainImage.path;
+                    updateData.mainImage = file.mainImage[0].path;
                 }
                 if (file.maltipleImage) {
                     let maltipleImage = file.maltipleImage.map(img => img.path);

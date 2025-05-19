@@ -35,15 +35,16 @@ export default function ViewProperty() {
 
     // viewPropertyhendler part
 
-    const viewPropertyhendler = (id, agent_Id) => {
+    const viewPropertyhendler = (id, user_id) => {
 
-        rating(agent_Id[0]._id);
         axios.get(BASE_URL + `/property/read?id=${id}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
         }).then(
             (success) => {
+                console.log(success.data.allProperty);
+
                 setPropertyDetails(success.data.allProperty);
                 setViewProperty(true)
             }
@@ -151,7 +152,7 @@ export default function ViewProperty() {
                                             {data.area} {data.district} {data.state}
                                         </td>
                                         <td className="px-4 py-2">
-                                            {data.agent.map((agent, idx) => (
+                                            {data?.agent?.map((agent, idx) => (
                                                 <Link href={`/agents/${agent._id}`} key={idx}>
                                                     <span className="text-blue-600 hover:underline">{agent.name}</span>
                                                 </Link>
@@ -201,7 +202,7 @@ export default function ViewProperty() {
                                         </td>
 
                                         <td className="px-4 py-2">
-                                            <button onClick={() => viewPropertyhendler(data._id, data.agent)} className="text-blue-600 hover:underline">view</button>
+                                            <button onClick={() => viewPropertyhendler(data._id, data.user._id)} className="text-blue-600 hover:underline">view</button>
 
                                             {/* view property part */}
                                             <div className={`fixed inset-0 bg-black bg-opacity-20 z-50 flex items-center justify-center w-full ${viewProperty ? 'block' : 'hidden'}`}>
@@ -225,7 +226,7 @@ export default function ViewProperty() {
                                                                 <h1 className="text-4xl font-bold text-gray-800">{propertyDetails?.title}</h1>
                                                                 <p className="mt-2 text-lg text-gray-600">{propertyDetails?.category}</p>
                                                                 <p className="mt-4 text-xl text-gray-700">{propertyDetails?.price}</p>
-                                                                <p className="mt-2 text-gray-500">{propertyDetails?.state}, {propertyDetails?.city}</p>
+                                                                <p className="mt-2 text-gray-500">{propertyDetails?.address},{propertyDetails?.state}, {propertyDetails?.city}</p>
                                                                 <p className="mt-2 text-gray-500">{propertyDetails?.area}</p>
                                                                 <span
                                                                     className={`mt-2 inline-block text-sm px-3 py-1 rounded-full ${propertyDetails?.status === "available"
@@ -270,7 +271,7 @@ export default function ViewProperty() {
                                                         {/* Agent Info */}
                                                         <div className="mt-8">
                                                             <h2 className="text-xl font-semibold text-gray-800">Info</h2>
-                                                            <p className="mt-2 text-gray-600">Agent ID: {propertyDetails?.agent?.name} <span className="text-[11px] text-green-500">({averageRating})</span></p>
+                                                            <p className="mt-2 text-gray-600">Owner ID: {propertyDetails?.user?.name} <span className="text-[11px] text-green-500">({averageRating})</span></p>
                                                             <p className="mt-2 text-gray-500">Action Status: {propertyDetails?.action}</p>
                                                         </div>
                                                     </div>

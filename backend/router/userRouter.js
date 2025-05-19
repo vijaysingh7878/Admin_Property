@@ -68,9 +68,7 @@ userRouter.put('/remove-profile', async (req, res) => {
 })
 
 // user update part
-userRouter.patch('/user-update/:id', userImg.single('userProfile'), async (req, res) => {
-    console.log(req);
-
+userRouter.patch('/user-update/:id', userImg.single('profile_Photo'), async (req, res) => {
     const result = new userController().editUser(req.body, req.file, req.params.id).then(
         (success) => {
             res.send(success);
@@ -121,6 +119,49 @@ userRouter.post(
         )
     }
 )
+
+// remove like property part 
+userRouter.post(
+    '/remove-to-like',
+    (req, res) => {
+        const result = new userController().removeToLike(req.body);
+        result.then(
+            (success) => {
+                res.send(success);
+            }
+        ).catch(
+            (error) => {
+                res.send(error);
+            }
+        )
+    }
+)
+
+//  password update part
+userRouter.post('/password', async (req, res) => {
+    const result = new userController().editPassword(req.body).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
+
+//  admin Login part
+userRouter.post('/adminLogin', async (req, res) => {
+    const result = new userController().adminLogin(req.body).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
 
 
 module.exports = userRouter;

@@ -1,21 +1,26 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const ratingSchema = new mongoose.Schema({
-    agentId: {
+    propertyId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'agent',
+        ref: 'property', 
         required: true
     },
-    userId: {
+    commenterId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'user', 
+        required: true
+    },
+    propertyOwnerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user', 
         required: true
     },
     rating: {
         type: Number,
-        required: true,
         min: 1,
-        max: 5
+        max: 5,
+        required: true
     },
     comment: {
         type: String,
@@ -29,4 +34,3 @@ const ratingSchema = new mongoose.Schema({
 
 const ratingModel = mongoose.model('rating', ratingSchema);
 module.exports = ratingModel;
-

@@ -12,18 +12,19 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    const BASE_URL = 'https://admin-property.onrender.com'
+    const BASE_URL = 'http://localhost:5001'
+    // const BASE_URL = 'https://admin-property.onrender.com'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
 
     const admin = useSelector((state) => state.admin.data);
     const [loading, setLoading] = useState(true);
-    const [readProperty, setReadProperty] = useState();
+    const [readProperty, setReadProperty] = useState([]);
     const [totalProperty, setTotalProperty] = useState()
     const [users, setUsers] = useState()
     const [totalUsers, setTotalUsers] = useState()
-    const [agents, setAgents] = useState();
+    // const [agents, setAgents] = useState();
     const [totalAgents, setTotalAgents] = useState();
     const [request, setRequest] = useState();
     const [blog, setBlog] = useState();
@@ -43,6 +44,8 @@ export const Context = ({ children }) => {
 
         await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`).then(
             (success) => {
+                console.log(success.data);
+                
                 setReadProperty(success.data.allProperty);
                 setTotalProperty(success.data.total)
             }
@@ -54,8 +57,8 @@ export const Context = ({ children }) => {
     }
 
     // allUser part
-    const allUser = async (searchUsers = '', filter = '', skip = 0) => {
-        await axios.get(BASE_URL + `/user/read?filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}`, {
+    const allUser = async (searchUsers = '', filter = '', skip = 0, id = '', role = '') => {
+        await axios.get(BASE_URL + `/user/read?id=${id}&filter=${filter}&name=${searchUsers}&skip=${skip}&limit=${limit}&role=${role}`, {
             headers: {
                 Authorization: `${localStorage.getItem("adminToken")}`
             }
@@ -72,22 +75,22 @@ export const Context = ({ children }) => {
     }
 
     // allAgent part
-    const allAgent = async (searchUsers = '', filter = '', id = '', skip = 0) => {
-        await axios.get(BASE_URL + `/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
-            headers: {
-                Authorization: `${localStorage.getItem("adminToken")}`
-            }
-        }).then(
-            (success) => {
-                setAgents(success.data.users)
-                setTotalAgents(success.data.total)
-            }
-        ).catch(
-            (error) => {
-                console.log(error);
-            }
-        )
-    }
+    // const allAgent = async (searchUsers = '', filter = '', id = '', skip = 0) => {
+    //     await axios.get(BASE_URL + `/agent/read?name=${searchUsers}&filter=${filter}&id=${id}&skip=${skip}&limit=${limit}`, {
+    //         headers: {
+    //             Authorization: `${localStorage.getItem("adminToken")}`
+    //         }
+    //     }).then(
+    //         (success) => {
+    //             setAgents(success.data.users)
+    //             setTotalAgents(success.data.total)
+    //         }
+    //     ).catch(
+    //         (error) => {
+    //             console.log(error);
+    //         }
+    //     )
+    // }
     //   requestview part
     const requestView = async (filter = '') => {
         await axios.get(BASE_URL + `/req/read?filter=${filter}`, {
@@ -186,7 +189,7 @@ export const Context = ({ children }) => {
     if (!admin && pathname !== "/login") return null;
 
     return (
-        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, allAgent, agents, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating,viewBanner,banner }}>
+        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating, viewBanner, banner }}>
             <>
                 {admin && pathname != "/login" ? (
                     <div className="flex">

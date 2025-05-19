@@ -9,18 +9,30 @@ class userController {
     // createUser part
     createUser(data, file) {
         return new Promise(
+
             async (resolve, reject) => {
                 try {
+                    const findAdmin = await userModel.findOne({ role: data.role == "admin" });
+                    if (findAdmin) {
+                        return reject({
+                            msg: `Admin permission required`,
+                            status: 0
+                        })
+                    }
+                    const newData = {
+                        ...data,
+                        role: data.role || 'user',
+                        password: await bcrypt.hash(data.password, 10)
+                    };
                     if (file) {
                         const newUser = new userModel({
-                            ...data,
-                            profile_Photo: file.path,
-                            password: await bcrypt.hash(data.password, 10)
+                            ...newData,
+                            profile_Photo: file.path
                         })
                         newUser.save().then(
                             () => {
                                 resolve({
-                                    msg: "user created",
+                                    msg: `${newUser.role} created`,
                                     status: 1
                                 })
                             }
@@ -28,27 +40,28 @@ class userController {
                             (error) => {
                                 console.log(error);
                                 reject({
-                                    msg: "user not created",
+                                    msg: `${newUser.role} not created`,
                                     status: 0
                                 })
                             }
                         )
                     } else {
                         const newUser = new userModel({
-                            ...data,
-                            password: await bcrypt.hash(data.password, 10)
+                            ...newData
                         });
                         newUser.save().then(
                             () => {
                                 resolve({
-                                    msg: "user created",
+                                    msg: `${newUser.role} created`,
                                     status: 1
                                 })
                             }
                         ).catch(
                             (error) => {
+                                console.log(error);
+
                                 reject({
-                                    msg: "user not created",
+                                    msg: `${newUser.role} not created`,
                                     status: 0
                                 })
                             }
@@ -75,10 +88,13 @@ class userController {
                     if (query.id) {
                         findUser = await userModel.findById(query.id);
                         return resolve({
-                            msg: 'user found',
+                            msg: `${findUser.role} found`,
                             status: 1,
                             users: findUser
                         })
+                    }
+                    if (query.role) {
+                        filter.role = query.role
                     }
                     if (query.name != 'null') {
                         filter.$or = [
@@ -93,12 +109,12 @@ class userController {
 
                     findUser = await userModel.find(filter).sort({ createdAt: -1 }).skip(query.skip).limit(query.limit);
                     const total = await userModel.countDocuments(filter)
-
+                    const all_Users = findUser.filter(data => data.role != 'admin')
                     if (findUser) {
                         resolve({
                             msg: 'user found',
                             status: 1,
-                            users: findUser,
+                            users: all_Users,
                             total
                         })
                     } else {
@@ -205,6 +221,7 @@ class userController {
         return new Promise(
             async (resolve, reject) => {
                 try {
+                    const finduser = await userModel.findById(id)
                     if (file) {
                         await userModel.updateOne(
                             {
@@ -217,16 +234,18 @@ class userController {
                                 }
                             }
                         ).then(
-                            () => {
+                            async () => {
+                                const update_user = await userModel.findById(id);
                                 resolve({
-                                    msg: 'user updated',
-                                    status: 1
+                                    msg: `${finduser.role} updated`,
+                                    status: 1,
+                                    user: update_user
                                 })
                             }
                         ).catch(
                             () => {
                                 reject({
-                                    msg: 'user not updated due to profile photo error',
+                                    msg: `${finduser.role} not updated due to profile photo error`,
                                     status: 0
                                 })
                             }
@@ -242,16 +261,18 @@ class userController {
                                 }
                             }
                         ).then(
-                            () => {
+                            async () => {
+                                const update_user = await userModel.findById(id);
                                 resolve({
-                                    msg: 'user updated',
-                                    status: 1
+                                    msg: `${finduser.role} updated`,
+                                    status: 1,
+                                    user: update_user
                                 })
                             }
                         ).catch(
                             () => {
                                 reject({
-                                    msg: 'user not updated',
+                                    msg: `${finduser.role} updated not updated`,
                                     status: 0
                                 })
                             }
@@ -271,11 +292,8 @@ class userController {
     async loginUser(data) {
         try {
             const user = await userModel.findOne({ email: data.email });
-            const agent = user ? null : await agentModel.findOne({ email: data.email });
 
-            const account = user || agent;
-
-            if (!account) {
+            if (!user) {
                 return {
                     msg: 'Please enter a valid email',
                     status: 0
@@ -291,7 +309,7 @@ class userController {
                 };
             }
 
-            const userType = user ? 'user' : 'agent';
+            const userType = user.role;
 
             return {
                 msg: 'Login successful',
@@ -320,21 +338,21 @@ class userController {
                         userModel.deleteOne({ _id: id }).then(
                             () => {
                                 resolve({
-                                    msg: 'User deleted',
+                                    msg: `${deleteUser.role} deleted`,
                                     status: 1
                                 })
                             }
                         ).catch(
                             () => {
                                 reject({
-                                    msg: 'User not deleted',
+                                    msg: `${deleteUser.role} not deleted`,
                                     status: 0
                                 })
                             }
                         )
                     } else {
                         reject({
-                            msg: 'User not found',
+                            msg: `${deleteUser.role} deleted`,
                             status: 0
                         })
                     }
@@ -391,6 +409,148 @@ class userController {
                 }
             }
         )
+    }
+
+    // remove part
+    removeToLike(data) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const userId = new mongoose.Types.ObjectId(data.userId)
+                    const propertyId = new mongoose.Types.ObjectId(data.propertyId)
+                    const like_Property = await userModel.findOne({
+                        _id: userId,
+                        likedProperties: propertyId
+                    })
+                    if (like_Property) {
+                        await userModel.updateOne(
+                            {
+                                _id: userId,
+                            }, {
+                            $pull: {
+                                likedProperties: propertyId
+                            }
+                        }
+                        )
+                        return (resolve({
+                            msg: 'Remove to like',
+                            status: 1
+                        }))
+
+                    } else {
+                        return (reject({
+                            msg: 'Property not found',
+                            status: 0
+                        }))
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+
+    // password part
+    editPassword(data) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    const foundAdmin = await userModel.findOne({ email: data.email })
+                    if (foundAdmin) {
+                        if (data.new_password) {
+                            const hashedPassword = await bcrypt.hash(data.new_password, 10);
+                            await userModel.updateOne(
+                                {
+                                    _id: foundAdmin._id
+                                },
+                                {
+                                    $set: {
+                                        password: hashedPassword
+                                    }
+                                }
+                            ).then(() => {
+                                return resolve({
+                                    msg: 'admin password updated',
+                                    status: 1,
+                                }
+                                )
+                            }
+                            )
+                        } else {
+                            return reject({
+                                msg: 'Please enter vaild password',
+                                status: 0,
+                            }
+                            )
+                        }
+                    } else {
+                        return reject({
+                            msg: 'admin not found',
+                            status: 0,
+                        }
+                        )
+                    }
+                } catch (error) {
+                    console.log(error);
+
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+
+    // adminLogin chack part
+    async adminLogin(data) {
+        try {
+            const user = await userModel.findOne({ email: data.email });
+
+            if (!user) {
+                return {
+                    msg: 'Please enter a valid email',
+                    status: 0
+                };
+            }
+
+            if (user.role != 'admin') {
+                return {
+                    msg: 'Access denied. Admins only',
+                    status: 0
+                };
+            }
+
+            const passwordMatch = await bcrypt.compare(data.password, user.password);
+
+            if (!passwordMatch) {
+                return {
+                    msg: 'Please enter a valid password',
+                    status: 0
+                };
+            }
+
+            const userType = user.role;
+
+            return {
+                msg: 'Login successful',
+                status: 1,
+                userType,
+                user: { ...user.toJSON(), password: null },
+                userToken: tokenGenerate(user.toJSON())
+            };
+        } catch (error) {
+            console.error("Login error:", error);
+            return {
+                msg: 'Internal server error',
+                status: 0
+            };
+        }
     }
 }
 module.exports = userController;
