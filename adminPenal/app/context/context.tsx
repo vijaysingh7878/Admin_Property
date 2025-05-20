@@ -12,8 +12,8 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    const BASE_URL = 'http://localhost:5001'
-    // const BASE_URL = 'https://admin-property.onrender.com'
+    // const BASE_URL = 'http://localhost:5001'
+    const BASE_URL = 'https://admin-property.onrender.com'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
