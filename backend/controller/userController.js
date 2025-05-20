@@ -435,7 +435,7 @@ class userController {
                         likedProperties: propertyId
                     })
                     if (like_Property) {
-                        const user = await userModel.updateOne(
+                        const user = await userModel.findByIdAndUpdate(
                             {
                                 _id: userId,
                             }, {
