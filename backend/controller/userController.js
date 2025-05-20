@@ -300,6 +300,7 @@ class userController {
     // user login chack part
     async loginUser(data) {
         try {
+            console.log(data)
             const user = await userModel.findOne({ email: data.email });
 
             if (!user) {
@@ -394,18 +395,20 @@ class userController {
                             status: 0
                         }))
                     } else {
-                        await userModel.updateOne(
+                        const user = await userModel.findByIdAndUpdate(
                             {
                                 _id: userId,
                             }, {
-                            $push: {
+                            $addToSet: {
                                 likedProperties: propertyId
                             }
-                        }
+                        },
+                            { new: true }
                         )
                         return (resolve({
                             msg: 'Add to like',
-                            status: 1
+                            status: 1,
+                            user
                         }))
                     }
 
