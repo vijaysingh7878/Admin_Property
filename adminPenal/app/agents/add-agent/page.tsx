@@ -1,6 +1,7 @@
 'use client'
 import { MainContext } from '@/app/context/context';
 import axios from 'axios';
+import Link from 'next/link';
 import React, { useContext, useState } from 'react';
 
 const AddAgentForm = () => {
@@ -37,6 +38,7 @@ const AddAgentForm = () => {
 
     return (
         <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+            <Link href={'/agents'} className='bg-gray-200 p-1 rounded-sm hover:bg-gray-300'>← Back</Link>
             <h2 className="text-2xl font-semibold mb-6">Add New Agent</h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
                 <input

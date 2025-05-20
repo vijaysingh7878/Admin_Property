@@ -34,7 +34,6 @@ const io = new Server(server, {
 
 app.use(cors({
     origin: function (origin, callback) {
-        // If there's no origin (e.g., for non-browser requests like curl), allow it
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, origin);
         } else {

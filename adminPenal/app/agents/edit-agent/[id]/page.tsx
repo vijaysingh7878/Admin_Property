@@ -1,6 +1,7 @@
 'use client'
 import { MainContext } from "@/app/context/context";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from "react";
 
@@ -37,10 +38,12 @@ export default function Editusers({ params }) {
     // users update part
     const usersEditHendler = (e) => {
         e.preventDefault();
+        console.log(e.target.profile_Photo.files);
+
         const formData = new FormData();
         formData.append('name', e.target.name.value)
-        if (e.target.profile_Photo) {
-            formData.append('profile_Photo', e.target.profile_Photo.files[0] ?? null)
+        if (e.target.profile_Photo.files.length > 0) {
+            formData.append('profile_Photo', e.target.profile_Photo.files[0])
         }
         formData.append('phone', e.target.phone.value)
         formData.append('email', e.target.email.value)
@@ -63,6 +66,7 @@ export default function Editusers({ params }) {
         <form onSubmit={usersEditHendler}
             className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md space-y-6"
         >
+            <Link href={'/agents'} className='bg-gray-200 p-1 rounded-sm hover:bg-gray-300'>← Back</Link>
             <h2 className="text-2xl font-semibold text-gray-700">Edit</h2>
 
             <div className="flex flex-col items-center">

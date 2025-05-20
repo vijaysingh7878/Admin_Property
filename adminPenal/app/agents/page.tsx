@@ -11,8 +11,8 @@ export default function Agent() {
     const [searchusers, setSearchusers] = useState(null)
     const searchParams = useSearchParams()
     const [filter, setFilter] = useState('')
-    const role = 'agent'
 
+    const role = 'agent';
 
     // statusChange part
     const statusChange = (id) => {
@@ -34,7 +34,6 @@ export default function Agent() {
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 allUser(searchusers, filter, skip, '', role);
-
             }
         ).catch(
             (error) => {
@@ -48,7 +47,7 @@ export default function Agent() {
             const newValue = Number(searchParams.get('skip')) || 0
             setSkip(newValue)
             allUser(searchusers, filter, newValue, '', role);
-        }, [searchusers, filter, skip]
+        }, [searchusers, filter, skip, role]
     )
     return (
         <div className="w-full p-6">

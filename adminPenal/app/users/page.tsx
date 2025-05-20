@@ -41,6 +41,7 @@ export default function User() {
             (success) => {
                 tostymsg(success.data.msg, success.data.status)
                 allUser(searchUsers, filter, skip, '', role);
+
             }
         ).catch(
             (error) => {
@@ -69,14 +70,14 @@ export default function User() {
         () => {
             const newValue = Number(searchParams.get('skip')) || 0
             setSkip(newValue)
-            allUser(searchUsers, filter, newValue);
+            allUser(searchUsers, filter, newValue, '', role);
         }, [searchParams, searchUsers, filter]
     )
 
     useEffect(
         () => {
             allUser(searchUsers, filter, skip, '', role);
-        }, [searchUsers, filter, skip]
+        }, [searchUsers, filter, skip, role]
     )
     return (
         <div className="w-full p-6 flex flex-col justify-between h-full">

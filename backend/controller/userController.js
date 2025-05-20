@@ -80,60 +80,69 @@ class userController {
 
     // readUser part
     readUser(query) {
-        return new Promise(
-            async (resolve, reject) => {
-                try {
-                    let findUser;
-                    let filter = {};
-                    if (query.id) {
-                        findUser = await userModel.findById(query.id);
-                        return resolve({
-                            msg: `${findUser.role} found`,
-                            status: 1,
-                            users: findUser
-                        })
-                    }
-                    if (query.role) {
-                        filter.role = query.role
-                    }
-                    if (query.name != 'null') {
-                        filter.$or = [
-                            { name: new RegExp(query.name) },
-                            { email: new RegExp(query.name) },
-                            { location: new RegExp(query.name) }
-                        ]
-                    }
-                    if (query.filter) {
-                        filter.status = query.filter == 'active' ? true : false
-                    }
+        return new Promise(async (resolve, reject) => {
+            try {
+                let findUser;
+                let filter = {};
 
-                    findUser = await userModel.find(filter).sort({ createdAt: -1 }).skip(query.skip).limit(query.limit);
-                    const total = await userModel.countDocuments(filter)
-                    const all_Users = findUser.filter(data => data.role != 'admin')
-                    if (findUser) {
-                        resolve({
-                            msg: 'user found',
-                            status: 1,
-                            users: all_Users,
-                            total
-                        })
-                    } else {
-                        reject({
-                            msg: 'user not found',
-                            status: 0
-                        })
-                    }
-                } catch (error) {
-                    console.log(error);
-
-                    reject({
-                        msg: 'Internal server error',
-                        status: 0
-                    })
+                if (query.id) {
+                    findUser = await userModel.findById(query.id);
+                    return resolve({
+                        msg: `${findUser.role} found`,
+                        status: 1,
+                        users: findUser
+                    });
                 }
+
+                if (query.role) {
+                    filter.role = query.role;
+                }
+
+                if (query.name && query.name !== 'null') {
+                    filter.$or = [
+                        { name: new RegExp(query.name, 'i') },
+                        { email: new RegExp(query.name, 'i') },
+                        { location: new RegExp(query.name, 'i') }
+                    ];
+                }
+
+                if (query.filter) {
+                    filter.status = query.filter === 'active';
+                }
+
+                findUser = await userModel
+                    .find(filter)
+                    .sort({ createdAt: -1 })
+                    .skip(Number(query.skip))
+                    .limit(Number(query.limit));
+
+                const total = await userModel.countDocuments(filter);
+
+                const all_Users = query.role ? findUser : findUser.filter(data => data.role !== 'admin');
+
+                if (findUser) {
+                    resolve({
+                        msg: 'User(s) found',
+                        status: 1,
+                        users: all_Users,
+                        total
+                    });
+                } else {
+                    reject({
+                        msg: 'No users found',
+                        status: 0
+                    });
+                }
+            } catch (error) {
+                console.log(error);
+                reject({
+                    msg: 'Internal server error',
+                    status: 0
+                });
             }
-        )
+        });
     }
+
 
     // statusChange part
     statusChangeUser(query) {

@@ -19,6 +19,7 @@ const AdminDashboard = () => {
   const [view, setView] = useState(5)
   const [agents, setAgents] = useState([])
   const [user, setUser] = useState([])
+  console.log(users);
 
   const totalChart = 100;
 

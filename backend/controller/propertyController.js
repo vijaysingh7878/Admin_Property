@@ -71,8 +71,6 @@ class propertyController {
 
     // property read part
     propertyRead(query) {
-        console.log(query);
-
         return new Promise(
             async (resolve, reject) => {
                 try {
@@ -231,7 +229,7 @@ class propertyController {
     async propertyEdit(data, file, Id) {
         try {
             const id = new mongoose.Types.ObjectId(Id)
-
+            const existingProperty = await propertyModel.findById(id);
             let updateData = { ...data };
             if (file) {
                 if (file.mainImage) {
@@ -239,7 +237,7 @@ class propertyController {
                 }
                 if (file.maltipleImage) {
                     let maltipleImage = file.maltipleImage.map(img => img.path);
-                    updateData.maltipleImage = maltipleImage;
+                    updateData.maltipleImage = [...(existingProperty.maltipleImage || []), ...maltipleImage];
                 }
             }
             await propertyModel.updateOne({ _id: id }, { $set: updateData });
@@ -257,7 +255,7 @@ class propertyController {
         }
     }
 
-    // otherImg pert edit
+    // otherImg  pert edit
     otherImgEdit(url, id) {
         return new Promise(
             async (resolve, reject) => {

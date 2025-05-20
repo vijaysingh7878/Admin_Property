@@ -1,6 +1,7 @@
 'use client'
 import { MainContext } from "@/app/context/context";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useContext, useEffect, useState } from "react";
 
@@ -38,7 +39,9 @@ export default function EditUser({ params }) {
         event.preventDefault();
         const formData = new FormData();
         formData.append('name', event.target.name.value)
-        formData.append('profile_Photo', event.target.profilePhoto.files[0] ?? null)
+        if (event.target.profile_Photo.files.length > 0) {
+            formData.append('profile_Photo', event.target.profile_Photo.files[0])
+        }
         formData.append('phone', event.target.phone.value)
         formData.append('email', event.target.email.value)
         formData.append('location', event.target.location.value)
@@ -59,18 +62,19 @@ export default function EditUser({ params }) {
         <form onSubmit={userEditHendler}
             className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md space-y-6"
         >
+            <Link href={'/users'} className='bg-gray-200 p-1 rounded-sm hover:bg-gray-300'>← Back</Link>
             <h2 className="text-2xl font-semibold text-gray-700">Edit</h2>
 
             <div className="flex flex-col items-center">
                 <input
                     type="file"
-                    id="profilePhoto"
-                    name="profilePhoto"
+                    id="profile_Photo"
+                    name="profile_Photo"
                     accept="image/*"
                     onChange={(e) => setSelectImg(URL.createObjectURL(e.target.files[0]))}
                     className="mt-1 w-full text-sm text-gray-500 hidden"
                 />
-                <label htmlFor="profilePhoto" className="relative text-center">
+                <label htmlFor="profile_Photo" className="relative text-center">
                     <img src={selectImg ? selectImg : users?.profile_Photo} alt="Photo" className="w-28 h-28 cursor-pointer rounded-full object-cover border" />
                     <span className="absolute top-0 left-0 bg-black w-full min-h-full text-white opacity-0 hover:opacity-45 rounded-full duration-300 cursor-pointer flex justify-center items-center font-bold">Edit</span>
                 </label>
