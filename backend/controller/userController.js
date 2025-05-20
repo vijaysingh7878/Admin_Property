@@ -309,7 +309,7 @@ class userController {
                 };
             }
 
-            const passwordMatch = await bcrypt.compare(data.password, account.password);
+            const passwordMatch = await bcrypt.compare(data.password, user.password);
 
             if (!passwordMatch) {
                 return {
@@ -324,8 +324,8 @@ class userController {
                 msg: 'Login successful',
                 status: 1,
                 userType,
-                user: { ...account.toJSON(), password: null },
-                userToken: tokenGenerate(account.toJSON())
+                user: { ...user.toJSON(), password: null },
+                userToken: tokenGenerate(user.toJSON())
             };
         } catch (error) {
             console.error("Login error:", error);
