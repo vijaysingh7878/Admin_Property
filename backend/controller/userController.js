@@ -435,18 +435,22 @@ class userController {
                         likedProperties: propertyId
                     })
                     if (like_Property) {
-                        await userModel.updateOne(
+                        const user = await userModel.updateOne(
                             {
                                 _id: userId,
                             }, {
                             $pull: {
                                 likedProperties: propertyId
                             }
-                        }
+                        },
+                            {
+                                new: true
+                            }
                         )
                         return (resolve({
                             msg: 'Remove to like',
-                            status: 1
+                            status: 1,
+                            user
                         }))
 
                     } else {
