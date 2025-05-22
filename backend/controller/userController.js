@@ -400,11 +400,12 @@ class userController {
                             }
                         },
                             { new: true }
-                        ).populate('likedProperties')
+                        )
+                        const populatedUser = await userModel.findById(user._id).populate('likedProperties');
                         return (resolve({
                             msg: 'Add to like',
                             status: 1,
-                            user
+                            user: populatedUser
                         }))
                     }
 
@@ -442,11 +443,12 @@ class userController {
                             {
                                 new: true
                             }
-                        ).populate('likedProperties')
+                        )
+                        const populatedUser = await userModel.findById(user._id).populate('likedProperties');
                         return (resolve({
                             msg: 'Remove to like',
                             status: 1,
-                            user
+                            user: populatedUser
                         }))
 
                     } else {
