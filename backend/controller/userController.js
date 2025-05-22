@@ -445,7 +445,8 @@ class userController {
                         )
                         return (resolve({
                             msg: 'Remove to like',
-                            status: 1
+                            status: 1,
+                            user
                         }))
 
                     } else {
