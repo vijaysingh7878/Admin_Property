@@ -300,7 +300,7 @@ class userController {
     async loginUser(data) {
         try {
             console.log(data)
-            const user = await userModel.findOne({ email: data.email });
+            const user = await userModel.findOne({ email: data.email }).populate('likedProperties');
 
             if (!user) {
                 return {
@@ -318,12 +318,9 @@ class userController {
                 };
             }
 
-            const userType = user.role;
-
             return {
                 msg: 'Login successful',
                 status: 1,
-                userType,
                 user: { ...user.toJSON(), password: null },
                 userToken: tokenGenerate(user.toJSON())
             };
