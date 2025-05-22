@@ -86,7 +86,7 @@ class userController {
                 let filter = {};
 
                 if (query.id) {
-                    findUser = await userModel.findById(query.id);
+                    findUser = await userModel.findById(query.id).populate('likedProperties');
                     return resolve({
                         msg: `${findUser.role} found`,
                         status: 1,
@@ -114,7 +114,7 @@ class userController {
                     .find(filter)
                     .sort({ createdAt: -1 })
                     .skip(Number(query.skip))
-                    .limit(Number(query.limit));
+                    .limit(Number(query.limit)).populate('likedProperties');
 
                 const total = await userModel.countDocuments(filter);
 
@@ -142,7 +142,6 @@ class userController {
             }
         });
     }
-
 
     // statusChange part
     statusChangeUser(query) {
@@ -435,7 +434,7 @@ class userController {
                         likedProperties: propertyId
                     })
                     if (like_Property) {
-                        const user = await userModel.findByIdAndUpdate(
+                        const user = await userModel.updateOne(
                             {
                                 _id: userId,
                             }, {
@@ -449,8 +448,7 @@ class userController {
                         )
                         return (resolve({
                             msg: 'Remove to like',
-                            status: 1,
-                            user
+                            status: 1
                         }))
 
                     } else {
