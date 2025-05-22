@@ -400,7 +400,7 @@ class userController {
                             }
                         },
                             { new: true }
-                        )
+                        ).populate('likedProperties')
                         return (resolve({
                             msg: 'Add to like',
                             status: 1,
@@ -442,7 +442,7 @@ class userController {
                             {
                                 new: true
                             }
-                        )
+                        ).populate('likedProperties')
                         return (resolve({
                             msg: 'Remove to like',
                             status: 1,
