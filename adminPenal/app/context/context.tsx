@@ -32,7 +32,7 @@ export const Context = ({ children }) => {
     const [chat, setChat] = useState();
     const [limit, setLimit] = useState(10);
     const [skip, setSkip] = useState();
-    const [averageRating, setAverageRating] = useState('')
+    const [averageRating, setAverageRating] = useState('');
 
 
     const tostymsg = (msg, status) => {
