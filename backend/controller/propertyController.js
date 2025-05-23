@@ -131,7 +131,7 @@ class propertyController {
 
                 const matchQuery = conditions.length > 0 ? { $and: conditions } : {};
 
-                let sortOption = {};
+                let sortOption = { createdAt: -1 };
                 if (query.sort == 'new-to-old') {
                     sortOption = { createdAt: -1 };
                 } else if (query.sort == 'old-to-new') {
