@@ -75,10 +75,10 @@ class blogController {
                 try {
                     let allBlog;
                     if (query.id) {
-                        allBlog = await blogModel.findById(query.id).populate('user')
+                        allBlog = await blogModel.findById(query.id).populate('comment.user')
                     }
                     else {
-                        allBlog = await blogModel.find().populate('user')
+                        allBlog = await blogModel.find().populate('comment.user')
                     }
 
                     if (!allBlog) {
