@@ -163,6 +163,7 @@ export default function ViewProperty() {
                                                 <option value="available">Available</option>
                                                 <option value="sold">Sold</option>
                                                 <option value="soon">Soon</option>
+                                                <option value="popular">Popular</option>
                                             </select>
                                         </td>
                                         <td className="px-4 py-2">
