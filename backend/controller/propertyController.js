@@ -132,13 +132,13 @@ class propertyController {
                 const matchQuery = conditions.length > 0 ? { $and: conditions } : {};
 
                 let sortOption = {};
-                if (query.sort === 'new-to-old') {
+                if (query.sort == 'new-to-old') {
                     sortOption = { createdAt: -1 };
-                } else if (query.sort === 'old-to-new') {
+                } else if (query.sort == 'old-to-new') {
                     sortOption = { createdAt: 1 };
-                } else if (query.sort === 'low-to-high') {
+                } else if (query.sort == 'low-to-high') {
                     sortOption = { price: 1 };
-                } else if (query.sort === 'high-to-low') {
+                } else if (query.sort == 'high-to-low') {
                     sortOption = { price: -1 };
                 }
                 allProperty = await propertyModel.aggregate([
@@ -152,7 +152,7 @@ class propertyController {
                         },
                     },
                     { $unwind: '$user' },
-                    { $sort: sort },
+                    { $sort: sortOption },
                     { $skip: skip },
                     { $limit: limit },
                 ]);
