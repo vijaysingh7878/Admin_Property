@@ -74,12 +74,11 @@ class blogController {
             async (resolve, reject) => {
                 try {
                     let allBlog;
-
                     if (query.id) {
-                        allBlog = await blogModel.findById(query.id)
+                        allBlog = await blogModel.findById(query.id).populate('user')
                     }
                     else {
-                        allBlog = await blogModel.find();
+                        allBlog = await blogModel.find().populate('user')
                     }
 
                     if (!allBlog) {
@@ -149,33 +148,33 @@ class blogController {
     BlogEdit(data, file, id) {
         return new Promise(
             async (resolve, reject) => {
-                
+
                 try {
-                    if (file) {                        
-                            await blogModel.updateOne({ _id: id },
-                                {
-                                    $set: {
-                                        ...data,
-                                        mainImage: file.path,
+                    if (file) {
+                        await blogModel.updateOne({ _id: id },
+                            {
+                                $set: {
+                                    ...data,
+                                    mainImage: file.path,
+                                }
+                            }
+                        ).then(
+                            () => {
+                                resolve({
+                                    msg: 'Blog updated',
+                                    status: 1
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject(
+                                    {
+                                        msg: 'Blog not update due to file image',
+                                        status: 0
                                     }
-                                }
-                            ).then(
-                                () => {
-                                    resolve({
-                                        msg: 'Blog updated',
-                                        status: 1
-                                    })
-                                }
-                            ).catch(
-                                () => {
-                                    reject(
-                                        {
-                                            msg: 'Blog not update due to file image',
-                                            status: 0
-                                        }
-                                    )
-                                }
-                            )
+                                )
+                            }
+                        )
                     } else {
                         await blogModel.updateOne(
                             {
@@ -292,6 +291,53 @@ class blogController {
                         )
                     }
                 } catch (error) {
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+
+    // comment part
+    commentCreate(data) {
+        return new Promise(
+            async (resolve, reject) => {
+
+                try {
+                    if (data.id) {
+
+                        await blogModel.updateOne(
+                            {
+                                _id: data.id
+                            }, {
+                            $push: {
+                                comment: {
+                                    user: data.userId,
+                                    text: data.text,
+                                }
+                            }
+                        }
+                        ).then(
+                            () => {
+                                resolve({
+                                    msg: 'Comment Added',
+                                    status: 1
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'Comment not Added',
+                                    status: 0
+                                })
+                            }
+                        )
+                    }
+                } catch (error) {
+                    console.log(error);
+
                     reject({
                         msg: 'Internal server error',
                         status: 0

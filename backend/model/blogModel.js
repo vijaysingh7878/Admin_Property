@@ -5,7 +5,7 @@ const BlogSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    content: {
+    contect: {
         type: String,
         required: true,
     },
@@ -43,6 +43,24 @@ const BlogSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    comment: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'user',
+                required: true
+            },
+            text: {
+                type: String,
+                required: true
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ]
+
 });
 
 const blogModel = mongoose.model('blog', BlogSchema);

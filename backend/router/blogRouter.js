@@ -29,7 +29,6 @@ blogRouter.post('/create', uploadImg.single('mainImage'),
     })
 
 // blog read part
-
 blogRouter.get('/read', (req, res) => {
     const result = new blogController().blogRead(req.query).then(
         (success) => {
@@ -84,6 +83,19 @@ blogRouter.patch('/edit-blog/:id', async (req, res) => {
 // statusChange part
 blogRouter.put('/status-change', async (req, res) => {
     const result = new blogController().statusChange(req.query).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
+
+// comment part
+blogRouter.post('/comment', async (req, res) => {
+    const result = new blogController().commentCreate(req.body).then(
         (success) => {
             res.send(success);
         }
