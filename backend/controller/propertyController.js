@@ -71,118 +71,115 @@ class propertyController {
 
     // property read part
     propertyRead(query) {
-        return new Promise(
-            async (resolve, reject) => {
-                try {
-                    let allProperty
-                    let total;
-                    if (query) {
-                        let conditions = [];
-                        let skip = Number(query.skip || 0)
-                        let limit = Number(query.limit || 10)
-                        if (query.id) {
-                            allProperty = await propertyModel.aggregate([
-                                {
-                                    $match: { _id: new mongoose.Types.ObjectId(query.id) }
-                                },
-                                {
-                                    $lookup: {
-                                        from: 'users',
-                                        localField: 'user_Id',
-                                        foreignField: '_id',
-                                        as: 'user'
-                                    }
-                                }, {
-                                    $unwind: '$user'
-                                }
-                            ])
-                            return resolve({
-                                msg: 'property found',
-                                status: 1,
-                                allProperty: allProperty[0]
-                            })
-                        }
-                        if (query.filter) {
-                            conditions.push({
-                                $or: [
-                                    { action: query.filter },
-                                    { status: query.filter },
-                                    { propertyType: query.filter }
-                                ]
-                            }
-                            )
-                        }
-                        if (query.searchProperty) {
-                            conditions.push({
-                                $or: [
-                                    { title: { $regex: new RegExp(query.searchProperty, 'i') } },
-                                    { category: { $regex: new RegExp(query.searchProperty, 'i') } },
-                                    { state: { $regex: new RegExp(query.searchProperty, 'i') } },
-                                    { district: { $regex: new RegExp(query.searchProperty, 'i') } }
-                                ]
-                            }
-                            )
-                        }
-                        const Property = conditions.length > 0 ? { $and: conditions } : {};
-                        allProperty = await propertyModel.aggregate([
-                            {
-                                $match: Property
-                            },
-                            {
-                                $lookup: {
-                                    from: 'users',
-                                    localField: 'user_Id',
-                                    foreignField: '_id',
-                                    as: 'user'
-                                }
+        return new Promise(async (resolve, reject) => {
+            try {
+                let allProperty;
+                let total;
+                let conditions = [];
 
-                            },
-                            {
-                                $unwind: '$user'
-                            },
-                            { $sort: { createdAt: -1 } },
-                            { $skip: skip },
-                            { $limit: limit }
-                        ])
-                        total = await propertyModel.countDocuments(Property);
-                    } else {
-                        allProperty = await propertyModel.aggregate([
-                            {
-                                $lookup: {
-                                    from: 'users',
-                                    localField: 'user_Id',
-                                    foreignField: '_id',
-                                    as: 'user'
-                                }
-                            },
-                            { $sort: { createdAt: -1 } },
-                        ])
-                        total = await propertyModel.countDocuments();
-                    }
-                    if (!allProperty) {
-                        return reject({
-                            msg: 'result not found',
-                            status: 0
-                        })
-                    } else {
-                        return resolve({
-                            msg: 'property found',
-                            status: 1,
-                            allProperty,
-                            total
-                        })
-                    }
-                } catch (error) {
-                    console.log(error);
+                const skip = Number(query.skip || 0);
+                const limit = Number(query.limit || 10);
 
-                    reject({
-                        msg: 'Internal server error',
-                        status: 0
-                    })
+                if (query.id) {
+                    allProperty = await propertyModel.aggregate([
+                        { $match: { _id: new mongoose.Types.ObjectId(query.id) } },
+                        {
+                            $lookup: {
+                                from: 'users',
+                                localField: 'user_Id',
+                                foreignField: '_id',
+                                as: 'user',
+                            },
+                        },
+                        { $unwind: '$user' },
+                    ]);
+                    return resolve({
+                        msg: 'property found',
+                        status: 1,
+                        allProperty: allProperty[0],
+                    });
                 }
+
+                if (query.searchProperty) {
+                    conditions.push({
+                        $or: [
+                            { title: { $regex: new RegExp(query.searchProperty, 'i') } },
+                            { category: { $regex: new RegExp(query.searchProperty, 'i') } },
+                            { state: { $regex: new RegExp(query.searchProperty, 'i') } },
+                            { district: { $regex: new RegExp(query.searchProperty, 'i') } },
+                        ],
+                    });
+                }
+
+                if (query.filter) {
+                    conditions.push({
+                        $or: [
+                            { action: query.filter },
+                            { status: query.filter },
+                            { propertyType: query.filter },
+                        ],
+                    });
+                }
+
+                if (query.property_Type) {
+                    conditions.push({ propertyType: query.property_Type });
+                }
+
+                if (query.property_Category) {
+                    conditions.push({ category: query.property_Category });
+                }
+
+                const matchQuery = conditions.length > 0 ? { $and: conditions } : {};
+
+                let sortOption = {};
+                if (query.sort === 'new-to-old') {
+                    sortOption = { createdAt: -1 };
+                } else if (query.sort === 'old-to-new') {
+                    sortOption = { createdAt: 1 };
+                } else if (query.sort === 'low-to-high') {
+                    sortOption = { price: 1 };
+                } else if (query.sort === 'high-to-low') {
+                    sortOption = { price: -1 };
+                }
+                allProperty = await propertyModel.aggregate([
+                    { $match: matchQuery },
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'user_Id',
+                            foreignField: '_id',
+                            as: 'user',
+                        },
+                    },
+                    { $unwind: '$user' },
+                    { $sort: sort },
+                    { $skip: skip },
+                    { $limit: limit },
+                ]);
+
+                total = await propertyModel.countDocuments(matchQuery);
+
+                if (!allProperty.length) {
+                    return reject({ msg: 'Result not found', status: 0 });
+                }
+
+                return resolve({
+                    msg: 'property found',
+                    status: 1,
+                    allProperty,
+                    total,
+                });
+
+            } catch (error) {
+                console.log(error);
+                reject({
+                    msg: 'Internal server error',
+                    status: 0,
+                });
             }
-        )
+        });
     }
+
 
     // propertyDelete part
     propertyDelete(id) {
