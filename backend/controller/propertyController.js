@@ -128,7 +128,7 @@ class propertyController {
                 if (query.property_Category) {
                     conditions.push({ category: query.property_Category });
                 }
-            
+
                 const matchQuery = conditions.length > 0 ? { $and: conditions } : {};
 
                 let sortOption = { createdAt: -1 };
@@ -322,6 +322,9 @@ class propertyController {
                             }
                             if (data.num == 'soon') {
                                 updateProperty.status = 'soon'
+                            }
+                            if (data.num == 'popular') {
+                                updateProperty.status = 'popular'
                             }
                             await propertyModel.updateOne(
                                 {
