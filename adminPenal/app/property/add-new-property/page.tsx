@@ -20,7 +20,6 @@ export default function newPropertyAdd() {
             for (var img of event.target.otherImage.files) {
                 formData.append('maltipleImage', img)
             }
-
         }
 
         formData.append('title', event.target.title.value);
