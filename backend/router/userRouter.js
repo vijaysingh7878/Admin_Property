@@ -30,8 +30,8 @@ userRouter.post('/create', userImg.single('profile_Photo'), (req, res) => {
 
 
 // user read part
-userRouter.get('/read', (req, res) => {
-    const result = new userController().readUser(req.query).then(
+userRouter.get('/read', authAdmin, (req, res) => {
+    const result = new userController().readUser(req.user, req.query).then(
         (success) => {
             res.send(success);
         }

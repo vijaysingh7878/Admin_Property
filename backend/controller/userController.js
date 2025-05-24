@@ -79,11 +79,19 @@ class userController {
     }
 
     // readUser part
-    readUser(query) {
+    readUser(userToken, query) {
         return new Promise(async (resolve, reject) => {
             try {
                 let findUser;
                 let filter = {};
+                if (userToken && userToken.role != 'admin') {
+                    findUser = await userModel.findById(userToken._id).populate('likedProperties');
+                    return resolve({
+                        msg: `${findUser.role} found`,
+                        status: 1,
+                        users: findUser
+                    });
+                }
 
                 if (query.id) {
                     findUser = await userModel.findById(query.id).populate('likedProperties');
