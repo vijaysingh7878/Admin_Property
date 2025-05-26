@@ -15,6 +15,7 @@ export default function ViewProperty() {
     const [propertyDetails, setPropertyDetails] = useState();
     const [searchProperty, setSearchProperty] = useState('');
     const searchParams = useSearchParams()
+    console.log(readProperty);
 
     // status change part
     const actionHendler = (id, num) => {
@@ -152,11 +153,11 @@ export default function ViewProperty() {
                                             {data.area} {data.district} {data.state}
                                         </td>
                                         <td className="px-4 py-2">
-                                            {data?.agent?.map((agent, idx) => (
-                                                <Link href={`/agents/${agent._id}`} key={idx}>
-                                                    <span className="text-blue-600 hover:underline">{agent.name}</span>
-                                                </Link>
-                                            ))}
+
+                                            <Link href={`/agents/${data.user._id}`}>
+                                                <span className="text-blue-500 hover:underline">{data.user.name}</span>
+                                            </Link>
+
                                         </td>
                                         <td className="px-4 py-2">
                                             <select value={data.status} onChange={(e) => actionHendler(data._id, e.target.value)} className="w-full md:w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">

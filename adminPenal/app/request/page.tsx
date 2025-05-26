@@ -24,7 +24,6 @@ export default function RequestView() {
         )
     }
 
-
     useEffect(
         () => {
             requestView(filter)
@@ -64,7 +63,7 @@ export default function RequestView() {
                     >
                         <option value="">All Types</option>
                         <option value="buy">Buy</option>
-                        <option value="visit">Visit</option>
+                        <option value="rent">Rent</option>
                     </select>
                 </div>
 
@@ -112,7 +111,7 @@ export default function RequestView() {
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm text-gray-700">
-                                                    {req.agent.name}
+                                                    {req.propertyOwner.name}
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm">
@@ -120,7 +119,7 @@ export default function RequestView() {
                                                         className={`text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-700                                               
                                            `}
                                                     >
-                                                        Buy
+                                                        {req.requestType}
                                                     </span>
                                                 </td>
 
