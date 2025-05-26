@@ -17,7 +17,6 @@ export const Context = ({ children }) => {
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
-
     const admin = useSelector((state) => state.admin.data);
     const [loading, setLoading] = useState(true);
     const [readProperty, setReadProperty] = useState([]);
@@ -40,7 +39,7 @@ export const Context = ({ children }) => {
     };
 
     // propertyShow part
-    const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0) => {
+    const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0, role = `${admin.role}`) => {
 
         await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`).then(
             (success) => {
