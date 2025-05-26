@@ -12,8 +12,8 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    // const BASE_URL = 'http://localhost:5001'
-    const BASE_URL = 'https://admin-property.onrender.com'
+    const BASE_URL = 'http://localhost:5001'
+    // const BASE_URL = 'https://admin-property.onrender.com'
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
@@ -39,9 +39,9 @@ export const Context = ({ children }) => {
     };
 
     // propertyShow part
-    const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0, role = `${admin.role}`) => {
+    const propertyShow = async (filter = '', searchProperty = '', id = '', skip = 0) => {
 
-        await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}`).then(
+        await axios.get(BASE_URL + `/property/read?filter=${filter}&searchProperty=${searchProperty}&id=${id}&skip=${skip}&limit=${limit}&role=${admin.role}`).then(
             (success) => {
                 setReadProperty(success.data.allProperty);
                 setTotalProperty(success.data.total)
