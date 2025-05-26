@@ -166,7 +166,7 @@ class propertyController {
                 return resolve({
                     msg: 'property found',
                     status: 1,
-                    allProperty,
+                    allProperty: query.role == 'admin' ? allProperty : allProperty.filter(data => data.action == 'approved'),
                     total,
                 });
 
