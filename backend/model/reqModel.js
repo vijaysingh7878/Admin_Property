@@ -18,8 +18,8 @@ const requestSchema = new mongoose.Schema({
     },
     requestType: {
         type: String,
-        enum: ['visit', 'buy'],
-        default: 'visit'
+        enum: ['buy','rent']
+        // default: 'visit'
     },
     message: {
         type: String,

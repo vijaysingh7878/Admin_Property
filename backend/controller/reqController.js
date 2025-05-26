@@ -97,8 +97,6 @@ class ReqController {
             };
         }
     }
-    
-    
 
     // read req part
     async readReq(query) {

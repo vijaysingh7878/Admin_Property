@@ -5,7 +5,7 @@ const reqRouter = express.Router();
 
 // create req part
 reqRouter.post('/create', authAdmin, (req, res) => {
-    const result = new ReqController().createReq(req.user.id, req.body);
+    const result = new ReqController().createReq(req.user._id, req.body);
     result.then(
         (success) => {
             res.send(success);
