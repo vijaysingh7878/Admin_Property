@@ -124,6 +124,7 @@ export default function User() {
                             <th className="px-4 py-2 border">status</th>
                             <th className="px-4 py-2 border">Edit</th>
                             <th className="px-4 py-2 border">View</th>
+                            <th className="px-4 py-2 border">Details</th>
                             <th className="px-4 py-2 border">Delete</th>
                         </tr>
                     </thead>
@@ -202,6 +203,11 @@ export default function User() {
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </td>
+                                            <td className="px-4 py-2 border">
+                                                <Link href={`users/${data._id}`}>
+                                                    <button className="text-blue-600 hover:underline">Details</button>
+                                                </Link>
                                             </td>
                                             <td className="px-4 py-2 border text-center">
                                                 <button onClick={() => deleteUser(data._id)} className="text-blue-600 hover:underline">❌</button>

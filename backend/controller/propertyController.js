@@ -6,6 +6,8 @@ const userModel = require("../model/userModel");
 class propertyController {
     // property create part
     createProperty(data, file) {
+        console.log(data);
+
         return new Promise(
             async (resolve, reject) => {
                 try {
@@ -29,7 +31,7 @@ class propertyController {
                                 async () => {
                                     await userModel.updateOne(
                                         {
-                                            _id: data.agentId
+                                            _id: data.user_Id
                                         },
                                         {
                                             $push: {
@@ -106,7 +108,7 @@ class propertyController {
                             { title: { $regex: new RegExp(query.searchProperty, 'i') } },
                             { category: { $regex: new RegExp(query.searchProperty, 'i') } },
                             { state: { $regex: new RegExp(query.searchProperty, 'i') } },
-                            { district: { $regex: new RegExp(query.searchProperty, 'i') } },
+                            { city: { $regex: new RegExp(query.searchProperty, 'i') } },
                         ],
                     });
                 }

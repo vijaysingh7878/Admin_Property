@@ -85,7 +85,7 @@ class userController {
                 let findUser;
                 let filter = {};
                 if (userToken && userToken.role != 'admin') {
-                    findUser = await userModel.findById(userToken._id).populate('likedProperties');
+                    findUser = await userModel.findById(userToken._id).populate('likedProperties').populate('property');
                     return resolve({
                         msg: `${findUser.role} found`,
                         status: 1,
@@ -94,7 +94,7 @@ class userController {
                 }
 
                 if (query.id) {
-                    findUser = await userModel.findById(query.id).populate('likedProperties');
+                    findUser = await userModel.findById(query.id).populate('likedProperties').populate('property');
                     return resolve({
                         msg: `${findUser.role} found`,
                         status: 1,
@@ -122,7 +122,7 @@ class userController {
                     .find(filter)
                     .sort({ createdAt: -1 })
                     .skip(Number(query.skip))
-                    .limit(Number(query.limit)).populate('likedProperties');
+                    .limit(Number(query.limit)).populate('likedProperties').populate('property');
 
                 const total = await userModel.countDocuments(filter);
 

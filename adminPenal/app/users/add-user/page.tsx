@@ -9,7 +9,6 @@ const AddUserForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-  
         const formData = new FormData();
         formData.append('name', e.target.name.value)
         formData.append('profile_Photo', e.target.profile_Photo.files[0] ?? null)

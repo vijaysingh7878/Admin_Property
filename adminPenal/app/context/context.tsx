@@ -61,8 +61,6 @@ export const Context = ({ children }) => {
             }
         }).then(
             (success) => {
-                console.log(success.data);
-
                 setUsers(success.data.users)
                 setTotalUsers(success.data.total)
             }
@@ -98,8 +96,6 @@ export const Context = ({ children }) => {
             }
         }).then(
             (success) => {
-                console.log(success);
-
                 setRequest(success.data.request)
             }
         ).catch(
