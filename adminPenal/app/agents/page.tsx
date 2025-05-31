@@ -14,6 +14,19 @@ export default function Agent() {
 
     const role = 'agent';
 
+    const updateUserRole = async (userId, userRole) => {
+        try {
+            const res = await axios.patch(BASE_URL + `/user/${userId}/role`, { userRole })
+            tostymsg(res.data.msg, res.data.status);
+            if (res.data.status == 1) {
+                allUser(searchusers, filter, skip, '', role);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
     // statusChange part
     const statusChange = (id) => {
         axios.put(BASE_URL + `/user/status-change?id=${id}`).then(
@@ -84,6 +97,7 @@ export default function Agent() {
                         <th className="px-4 py-2 border">Phone</th>
                         <th className="px-4 py-2 border">Email</th>
                         <th className="px-4 py-2 border">Location</th>
+                        <th className="px-4 py-2 border">Role</th>
                         <th className="px-4 py-2 border">status</th>
                         <th className="px-4 py-2 border">Edit</th>
                         <th className="px-4 py-2 border">Details</th>
@@ -104,6 +118,17 @@ export default function Agent() {
                                         <td className="px-4 py-2 border">{data.phone}</td>
                                         <td className="px-4 py-2 border">{data.email}</td>
                                         <td className="px-4 py-2 border">{data.location}</td>
+                                        <td className="px-4 py-2">
+                                            <select
+                                                className="text-sm border rounded px-2 py-1 bg-gray-50"
+                                                value={data.role}
+                                                onChange={(e) => updateUserRole(data._id, e.target.value)}
+                                            >
+                                                <option value="user">User</option>
+                                                <option value="agent">Agent</option>
+                                                <option value="admin">Admin</option>
+                                            </select>
+                                        </td>
                                         <td className="px-4 py-2 border">
                                             <button onClick={() => statusChange(data._id)} className={`${data.status ? 'bg-blue-500' : 'bg-red-500'}  text-white px-4 py-1 rounded transition`}>
                                                 {data.status ? 'IN' : "OUT"}
@@ -115,7 +140,7 @@ export default function Agent() {
                                             </Link>
                                         </td>
                                         <td className="px-4 py-2 border">
-                                            <Link href={`agents/${data._id}`}>
+                                            <Link href={`users/${data._id}`}>
                                                 <button className="text-blue-600 hover:underline">Details</button>
                                             </Link>
                                         </td>

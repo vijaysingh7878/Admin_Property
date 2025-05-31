@@ -4,11 +4,12 @@ const bannerModel = require("../model/bannerImgModel");
 class bannerController {
 
     // banner create part
-    async createBanner(file) {
+    async createBanner(data, file) {
         try {
             if (file) {
                 const newBanner = await bannerModel({
-                    bannerImage: file.path
+                    bannerImage: file.path,
+                    banner_Category: data.banner_Category
                 })
                 await newBanner.save()
                 return ({

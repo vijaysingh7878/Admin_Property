@@ -7,7 +7,9 @@ import { useContext, useEffect, useState } from "react";
 
 export default function users() {
     const { id } = useParams()
-    const { users, allUser, rating, averageRating } = useContext(MainContext)
+    const { users, allUser, rating, averageRating } = useContext(MainContext);
+    const [filter, setFilter] = useState('')
+
 
     useEffect(
         () => {
@@ -39,12 +41,34 @@ export default function users() {
                         />
                     </div>
                 </div>
-
-                <h3 className="text-xl font-semibold mt-6 mb-4">Properties Added</h3>
+                <div className="flex items-center gap-10">
+                    <h3 className="text-xl font-semibold mt-6 mb-4">Properties Added</h3>
+                    <select
+                        className="w-full md:w-48 px-3 py-2 border border-gray-300 text-sm rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                        onChange={(e) => setFilter(e.target.value)}
+                    >
+                        <option value="">All</option>
+                        <optgroup label="Approval Status">
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </optgroup>
+                        <optgroup label="Availability">
+                            <option value="available">Available</option>
+                            <option value="sold">Sold</option>
+                            <option value="soon">Coming Soon</option>
+                        </optgroup>
+                        <optgroup label="Property Type">
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                            <option value="rent">Rent</option>
+                        </optgroup>
+                    </select>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {
                         users?.property?.length > 0 ? (
-                            users?.property.map((property, index) => (
+                            users?.property.filter(property => filter == '' || property.action == filter || property.status == filter).map((property, index) => (
                                 <div
                                     key={index}
                                     className="bg-white p-4 rounded shadow-md hover:shadow-lg transition duration-200"

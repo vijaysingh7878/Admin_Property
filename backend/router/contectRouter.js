@@ -17,21 +17,42 @@ contectRouter.post('/create', async (req, res) => {
 });
 
 // read part
-// contectRouter.get('/all', async (req, res) => {
-//     try {
-//         const contacts = await Contact.find().sort({ createdAt: -1 });
-//         res.status(200).json({
-//             msg: 'All contacts fetched',
-//             status: 1,
-//             data: contacts,
-//         });
-//     } catch (error) {
-//         console.error('Fetch contacts error:', error);
-//         res.status(500).json({
-//             msg: 'Internal server error',
-//             status: 0,
-//         });
-//     }
-// });
+contectRouter.get('/read', async (req, res) => {
+    const result = new ContactController().readContact(req.query).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+});
+
+// statusChange part
+contectRouter.patch('/status-change', async (req, res) => {
+    const result = new ContactController().statusChange(req.query).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
+
+// delete part
+contectRouter.delete('/delete', async (req, res) => {
+    const result = new ContactController().delete(req.query).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
 
 module.exports = contectRouter;

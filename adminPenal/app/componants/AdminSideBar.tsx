@@ -5,12 +5,12 @@ import { RiSlideshowFill } from "react-icons/ri";
 import { FaUserAlt } from "react-icons/fa";
 import { FaUserFriends } from "react-icons/fa";
 import { SiMainwp } from "react-icons/si";
-import { IoMdSettings } from "react-icons/io";
+import { MdConnectWithoutContact } from "react-icons/md";
 import { FaMicroblog, FaImages } from "react-icons/fa";
 import { VscGitPullRequestNewChanges } from "react-icons/vsc";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from '@/public/real-estate-logo-Photoroom.png'
+import logo from '@/public/real-estate-logo.jpg'
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "@/redux/reducer/AdminSlice";
 import { MdLogout } from "react-icons/md";
@@ -68,6 +68,11 @@ export default function AdminSideBar() {
       name: "Blogs",
       icon: <FaMicroblog size={18} />,
       slug: "blog",
+    },
+    {
+      name: "Contact Request",
+      icon: <MdConnectWithoutContact size={18} />,
+      slug: "contactRequest"
     }
   ];
 
@@ -107,7 +112,7 @@ export default function AdminSideBar() {
     }).then(
       (success) => {
         console.log(success.data);
-        
+
         if (success.data.status == 1) {
           dispatch(login({
             admin: success.data.user
@@ -168,13 +173,13 @@ export default function AdminSideBar() {
     <div className="h-[100vh] bg-gradient-to-b from-gray-100 to-gray-200 text-gray-800 px-3 shadow-lg sticky top-0 left-0 border-r border-gray-200 w-64 flex flex-col justify-between">
       {/* side bar nav part */}
       <div>
-        <div className="flex justify-center mb-2 border-b border-gray-200 pt-3">
+        <div className="flex justify-center w-40 mb-2 pt-3">
           <Image
             src={logo || 'logo'}
             alt="logo"
-            width={120}
+            width={200}
             height={80}
-            className="object-contain"
+            className="object-cover"
           />
         </div>
 
@@ -199,7 +204,7 @@ export default function AdminSideBar() {
           ))}
 
           {/* Settings Dropdown */}
-          <div className="relative cursor-pointer">
+          {/* <div className="relative cursor-pointer">
             <div
               onClick={() => setShowSettings(!showSettings)}
               className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-200 ${isActive(pathname)
@@ -224,7 +229,7 @@ export default function AdminSideBar() {
                 </Link>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 

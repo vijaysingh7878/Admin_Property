@@ -8,16 +8,34 @@ const propertyRouter = express.Router();
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'Property'
+    params: (req, file) => {
+        let resourceType = 'image';
+
+        if (file.mimetype.startsWith('video/')) {
+            resourceType = 'video';
+        } else if (
+            file.mimetype === 'application/pdf' ||
+            file.mimetype === 'application/msword' ||
+            file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
+            resourceType = 'raw';
+        }
+
+        return {
+            folder: 'Property',
+            resource_type: resourceType,
+        };
     },
-})
+});
+
 const uploadImg = multer({ storage: storage });
 
 // property create part
 propertyRouter.post('/create', uploadImg.fields([
     { name: 'mainImage', maxCount: 1 },
-    { name: 'maltipleImage', maxCount: 4 }
+    { name: 'maltipleImage', maxCount: 4 },
+    { name: 'video', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
 ]),
     async (req, res) => {
         const result = await new propertyController().createProperty(req.body, req.files).then(
@@ -60,7 +78,9 @@ propertyRouter.delete('/delete/:id', (req, res) => {
 // edit property part
 propertyRouter.put('/edit-property/:id', uploadImg.fields([
     { name: 'mainImage', maxCount: 1 },
-    { name: 'maltipleImage', maxCount: 4 }
+    { name: 'maltipleImage', maxCount: 4 },
+    { name: 'video', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
 ]), async (req, res) => {
     const result = new propertyController().propertyEdit(req.body, req.files, req.params.id).then(
         (success) => {

@@ -16,7 +16,7 @@ const banner_Img = multer({ storage: storage })
 
 // banner create part
 bannerRouter.post('/create', banner_Img.single('bannerImage'), (req, res) => {
-    const result = new bannerController().createBanner(req.file).then(
+    const result = new bannerController().createBanner(req.body, req.file).then(
         (success) => {
             res.send(success);
         }

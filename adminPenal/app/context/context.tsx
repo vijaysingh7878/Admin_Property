@@ -1,6 +1,6 @@
 'use client';
 
-import { toast, ToastContainer } from "react-toastify";
+import { Flip, toast, ToastContainer } from "react-toastify";
 import { createContext, useEffect, useState } from "react";
 // import AdminHeader from "../componants/AdminHeader";
 import AdminSideBar from "../componants/AdminSideBar";
@@ -12,7 +12,6 @@ import axios from "axios";
 export const MainContext = createContext();
 
 export const Context = ({ children }) => {
-    // const BASE_URL = 'http://localhost:5001'
     const BASE_URL = 'https://admin-property.onrender.com'
     const router = useRouter();
     const pathname = usePathname();
@@ -32,6 +31,7 @@ export const Context = ({ children }) => {
     const [limit, setLimit] = useState(10);
     const [skip, setSkip] = useState();
     const [averageRating, setAverageRating] = useState('');
+    const [contacts, setContacts] = useState([]);
 
 
     const tostymsg = (msg, status) => {
@@ -160,6 +160,19 @@ export const Context = ({ children }) => {
         )
     }
 
+    // contact req part
+    const fetchContacts = async (filter) => {
+        await axios.get(BASE_URL + `/contect/read?filter=${filter}`).then(
+            (success) => {
+                setContacts(success.data.contact);
+            }
+        ).catch(
+            (error) => {
+                console.log(error);
+
+            }
+        )
+    };
 
     // skip handler part
     const skipHendler = (index, limit, path) => {
@@ -186,13 +199,13 @@ export const Context = ({ children }) => {
     if (!admin && pathname !== "/login") return null;
 
     return (
-        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating, viewBanner, banner }}>
+        <MainContext.Provider value={{ BASE_URL, tostymsg, propertyShow, readProperty, users, allUser, requestView, request, viewBlog, blog, viewChat, chat, totalUsers, totalProperty, totalAgents, skipHendler, limit, skip, setSkip, rating, averageRating, viewBanner, banner, contacts, fetchContacts }}>
             <>
                 {admin && pathname != "/login" ? (
                     <div className="flex">
                         <AdminSideBar />
 
-                        <main className="flex-1 overflow-y-auto bg-white">
+                        <main className="flex-1 overflow-y-auto bg-white ">
                             {children}
                         </main>
 
@@ -200,7 +213,11 @@ export const Context = ({ children }) => {
                 ) : (
                     pathname == "/login" && children
                 )}
-                <ToastContainer autoClose={1000} />
+                <ToastContainer
+                    autoClose={1000}
+                    transition={Flip}
+                    toastClassName="text-sm bg-white shadow-md border w-52 border-gray-200 rounded p-3"
+                />
             </>
         </MainContext.Provider>
     );

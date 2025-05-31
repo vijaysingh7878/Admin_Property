@@ -8,6 +8,12 @@ const propertySchema = new mongoose.Schema(
             type: String,
             require: true
         },
+        video: {
+            type: String
+        },
+        document: {
+            type: String
+        },
         state: {
             type: String
         },
@@ -52,10 +58,32 @@ const propertySchema = new mongoose.Schema(
             enum: ['pending', 'approved', 'rejected'],
             default: 'pending'
         },
+        tag: {
+            type: String,
+            enum: ['featured', 'discount', 'popular'],
+            default: 'featured'
+        },
         status: {
             type: String,
-            enum: ['available', 'sold', 'soon', 'popular'],
+            enum: ['available', 'sold', 'soon', 'rentedBooked'],
             default: 'available'
+        },
+        rentDetails: {
+            rentStart: {
+                type: Date,
+            },
+            expiredOn: {
+                type: Date,
+            },
+            monthlyRent: {
+                type: Number,
+                trim: true,
+            },
+            status: {
+                type: Boolean,
+                default: false,
+                required: true
+            }
         }
     },
     {

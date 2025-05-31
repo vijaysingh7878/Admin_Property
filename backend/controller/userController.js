@@ -574,5 +574,47 @@ class userController {
             };
         }
     }
+
+    // roleChange part
+    roleChange(id, data) {
+        return new Promise(
+            async (resolve, reject) => {
+                try {
+                    if (id) {
+                        const user = await userModel.findById(id)
+                        await userModel.updateOne(
+                            {
+                                _id: id
+                            }, {
+                            $set: {
+                                role: data.userRole
+                            }
+                        }
+                        ).then(
+                            () => {
+                                resolve({
+                                    msg: 'Role change',
+                                    status: 1
+                                })
+                            }
+                        ).catch(
+                            () => {
+                                reject({
+                                    msg: 'Role not change',
+                                    status: 0
+                                })
+                            }
+                        )
+                    }
+                } catch (error) {
+                    reject({
+                        msg: 'Internal server error',
+                        status: 0
+                    })
+                }
+            }
+        )
+    }
+
 }
 module.exports = userController;

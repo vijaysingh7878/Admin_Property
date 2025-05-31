@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const propertyModel = require("../model/propertyModel");
 const reqModel = require("../model/reqModel");
 const userModel = require("../model/userModel");
@@ -103,42 +104,42 @@ class ReqController {
         try {
             const category = {}
             if (query.id) {
-                category._id = query.id
+                category._id = new mongoose.Types.ObjectId(query.id);
             }
             if (query.filter) {
                 category.requestType = query.filter.toLowerCase()
             }
-
-            const request = await reqModel.aggregate([
-                { $match: category },
-                {
-                    $lookup: {
-                        from: 'users',
-                        localField: 'user_Id',
-                        foreignField: '_id',
-                        as: 'user'
-                    }
-                },
-                { $unwind: '$user' },
-                {
-                    $lookup: {
-                        from: 'properties',
-                        localField: 'property_Id',
-                        foreignField: '_id',
-                        as: 'property'
-                    }
-                },
-                { $unwind: '$property' },
-                {
-                    $lookup: {
-                        from: 'users',
-                        localField: 'propertyOwnerId',
-                        foreignField: '_id',
-                        as: 'propertyOwner'
-                    }
-                },
-                { $unwind: '$propertyOwner' }
-            ])
+            const request = await reqModel.find(category).populate('user_Id').populate('property_Id').populate('propertyOwnerId')
+            // const request = await reqModel.aggregate([
+            //     { $match: category },
+            //     {
+            //         $lookup: {
+            //             from: 'users',
+            //             localField: 'user_Id',
+            //             foreignField: '_id',
+            //             as: 'user'
+            //         }
+            //     },
+            //     { $unwind: '$user' },
+            //     {
+            //         $lookup: {
+            //             from: 'properties',
+            //             localField: 'property_Id',
+            //             foreignField: '_id',
+            //             as: 'property'
+            //         }
+            //     },
+            //     { $unwind: '$property' },
+            //     {
+            //         $lookup: {
+            //             from: 'users',
+            //             localField: 'propertyOwnerId',
+            //             foreignField: '_id',
+            //             as: 'propertyOwner'
+            //         }
+            //     },
+            //     { $unwind: '$propertyOwner' }
+            // ])
             return (
                 {
                     msg: 'Request found',

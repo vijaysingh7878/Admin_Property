@@ -31,6 +31,12 @@ export default function EditProperty({ params }) {
         if (event.target.image.files[0]) {
             formData.append('mainImage', event.target.image.files[0]);
         }
+        if (event.target.video.files.length > 0) {
+            formData.append('video', event.target.video.files[0]);
+        }
+        if (event.target.document.files.length > 0) {
+            formData.append('document', event.target.document.files[0]);
+        }
         formData.append('category', event.target.category.value);
         formData.append('propertyType', event.target.elements.propertyType.value);
         formData.append('area', event.target.area.value);
@@ -131,6 +137,31 @@ export default function EditProperty({ params }) {
                         }
                     </div>
                 </div>
+                <div className="grid md:grid-cols-2 gap-6 p-4 bg-white shadow-md rounded-lg">
+                    <div>
+                        <label htmlFor="video" className="block mb-2 text-sm font-medium text-gray-700">
+                            🎥 Video Tour
+                        </label>
+                        <input
+                            type="file"
+                            id="video"
+                            name="video"
+                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="document" className="block mb-2 text-sm font-medium text-gray-700">
+                            📄 Property Documents
+                        </label>
+                        <input
+                            type="file"
+                            id="document"
+                            name="document"
+                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                        />
+                    </div>
+                </div>
 
                 <div className="mb-4">
                     <label className="mb-1 font-medium" htmlFor="category">Category</label>
@@ -180,7 +211,7 @@ export default function EditProperty({ params }) {
                         Save
                     </button>
                 </div>
-            </form>
+            </form >
         </>
     )
 }

@@ -93,25 +93,25 @@ export default function RequestView() {
                                                 <td className="px-4 py-3 text-sm">{index + 1}</td>
 
                                                 <td className="px-4 py-3 text-sm  space-x-3">
-                                                    <span>{req.user.name}</span>
+                                                    <span>{req.user?.name}</span>
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm space-x-3">
-                                                    <span>{req.user.phone}</span>
+                                                    <span>{req.user?.phone}</span>
                                                 </td>
 
-                                                <td className="px-4 py-3 text-sm text-gray-700">{req.user.email}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-700">{req.user?.email}</td>
 
                                                 <td className="px-4 py-3 text-sm flex items-center space-x-3">
-                                                    <span>{req.property.title}</span>
+                                                    <span>{req.property?.title}</span>
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm text-gray-700">
-                                                    {req.property.state}, {req.property.district}
+                                                    {req.property?.state}, {req.property?.district}
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm text-gray-700">
-                                                    {req.propertyOwner.name}
+                                                    {req.propertyOwner?.name}
                                                 </td>
 
                                                 <td className="px-4 py-3 text-sm">

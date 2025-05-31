@@ -7,6 +7,7 @@ import { TiTick } from "react-icons/ti";
 import { GiCrossMark } from "react-icons/gi";
 import { useSearchParams } from "next/navigation";
 import Pagination from "../componants/Pagination";
+import Image from "next/image";
 
 export default function ViewProperty() {
     const { BASE_URL, tostymsg, propertyShow, readProperty, totalProperty, limit, skip, setSkip, rating, averageRating } = useContext(MainContext)
@@ -15,7 +16,6 @@ export default function ViewProperty() {
     const [propertyDetails, setPropertyDetails] = useState();
     const [searchProperty, setSearchProperty] = useState('');
     const searchParams = useSearchParams()
-    console.log(readProperty);
 
     // status change part
     const actionHendler = (id, num) => {
@@ -44,8 +44,6 @@ export default function ViewProperty() {
             }
         }).then(
             (success) => {
-                console.log(success.data.allProperty);
-
                 setPropertyDetails(success.data.allProperty);
                 setViewProperty(true)
             }
@@ -116,7 +114,7 @@ export default function ViewProperty() {
                     readProperty?.length > 0 ? (
                     <div className="overflow-auto rounded-md shadow-sm border border-gray-200">
                         <table className="min-w-full text-sm text-left">
-                            <thead className="bg-gray-100 text-gray-600 uppercase">
+                            <thead className="bg-gray-100 text-gray-600 uppercase text-[12px]">
                                 <tr>
                                     <th className="px-4 py-3">S.No.</th>
                                     <th className="px-4 py-3">Image</th>
@@ -125,7 +123,8 @@ export default function ViewProperty() {
                                     <th className="px-4 py-3">Price</th>
                                     <th className="px-4 py-3">Type</th>
                                     <th className="px-4 py-3">Location</th>
-                                    <th className="px-4 py-3">Agent</th>
+                                    <th className="px-4 py-3">Owner</th>
+                                    <th className="px-4 py-3">Tags</th>
                                     <th className="px-4 py-3">Status</th>
                                     <th className="px-4 py-3 text-center">Action</th>
                                     <th className="px-4 py-3">Edit</th>
@@ -135,18 +134,22 @@ export default function ViewProperty() {
                             </thead>
                             <tbody className="bg-white text-gray-700 divide-y divide-gray-200">
                                 {readProperty.map((data, index) => (
-                                    <tr key={index} className="hover:bg-gray-50 transition">
+                                    <tr key={index} className="hover:bg-gray-50 transition text-[12px] text-center">
                                         <td className="px-4 py-2">{index + 1 + skip}</td>
                                         <td className="px-4 py-2">
-                                            <img
+                                            <Image
                                                 src={data.mainImage}
                                                 alt="property"
-                                                className="w-14 h-14 object-cover rounded"
+                                                width={10}
+                                                height={10}
+                                                className="w-14 h-10 object-cover rounded"
                                             />
                                         </td>
                                         <td className="px-4 py-2">{data.title}</td>
                                         {/* <td className="px-4 py-2">{data.category}</td> */}
-                                        <td className="px-4 py-2 font-semibold">₹{data.price}</td>
+                                        <td className="px-4 py-2 font-semibold ">₹{data.price || data
+
+                                            ?.rentDetails.monthlyRent}</td>
                                         <td className={`px-4 py-2 font-semibold`}>
                                             <span className="bg-green-300 p-1 rounded-md">{data.propertyType}</span></td>
                                         <td className="px-4 py-2">
@@ -154,17 +157,28 @@ export default function ViewProperty() {
                                         </td>
                                         <td className="px-4 py-2">
 
-                                            <Link href={`/agents/${data.user._id}`}>
+                                            <Link href={`/users/${data.user._id}`}>
                                                 <span className="text-blue-500 hover:underline">{data.user.name}</span>
                                             </Link>
 
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            <select value={data.tag} onChange={(e) => actionHendler(data._id, e.target.value)} className="w-full md:w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="featured">Featured</option>
+                                                <option value="discount">Discount</option>
+                                                <option value="popular">Popular</option>
+                                            </select>
                                         </td>
                                         <td className="px-4 py-2">
                                             <select value={data.status} onChange={(e) => actionHendler(data._id, e.target.value)} className="w-full md:w-32 px-2 py-1 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                                 <option value="available">Available</option>
                                                 <option value="sold">Sold</option>
                                                 <option value="soon">Soon</option>
-                                                <option value="popular">Popular</option>
+                                                {
+                                                    data.propertyType == 'rent' && (
+                                                        <option value="rentedBooked">Rented Booked</option>
+                                                    )
+                                                }
                                             </select>
                                         </td>
                                         <td className="px-4 py-2">
@@ -227,7 +241,12 @@ export default function ViewProperty() {
                                                             <div className="md:ml-8 mt-4 md:mt-0">
                                                                 <h1 className="text-4xl font-bold text-gray-800">{propertyDetails?.title}</h1>
                                                                 <p className="mt-2 text-lg text-gray-600">{propertyDetails?.category}</p>
-                                                                <p className="mt-4 text-xl text-gray-700">{propertyDetails?.price}</p>
+                                                                {
+                                                                    propertyDetails?.price ?
+                                                                        <p className="mt-4 text-sm text-gray-700">price:-{propertyDetails?.price}</p>
+                                                                        :
+                                                                        <p className="mt-4 text-sm text-gray-700">Monthly Rent:-{propertyDetails?.rentDetails.monthlyRent}</p>
+                                                                }
                                                                 <p className="mt-2 text-gray-500">{propertyDetails?.address},{propertyDetails?.state}, {propertyDetails?.city}</p>
                                                                 <p className="mt-2 text-gray-500">{propertyDetails?.area}</p>
                                                                 <span
@@ -277,7 +296,31 @@ export default function ViewProperty() {
                                                             <p className="mt-2 text-gray-500">Action Status: {propertyDetails?.action}</p>
                                                         </div>
                                                     </div>
+                                                    {/* video part */}
+                                                    {propertyDetails?.video && (
+                                                        <div className="mt-8">
+                                                            <h2 className="text-xl font-semibold text-gray-800">Property Video</h2>
+                                                            <div className="mt-4">
+                                                                <video controls className="w-full rounded-lg shadow-md">
+                                                                    <source src={propertyDetails?.video} type="video/mp4" />
+                                                                    Your browser does not support the video tag.
+                                                                </video>
+                                                            </div>
+                                                        </div>
+                                                    )}
 
+                                                    {/* Document Preview */}
+                                                    {propertyDetails?.document && (
+                                                        <div className="mt-8">
+                                                            <h2 className="text-xl font-semibold text-gray-800">Property Document (Preview)</h2>
+                                                            <iframe
+                                                                src={`https://docs.google.com/gview?url=${propertyDetails.document}&embedded=true`}
+                                                                className="w-full h-96 border rounded"
+                                                                title="Document Preview"
+                                                            />
+
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>

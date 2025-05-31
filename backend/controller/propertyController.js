@@ -6,24 +6,29 @@ const userModel = require("../model/userModel");
 class propertyController {
     // property create part
     createProperty(data, file) {
-        console.log(data);
-
         return new Promise(
             async (resolve, reject) => {
                 try {
                     const user = await userModel.findById(data.user_Id);
                     if (user) {
                         let newProperty;
+                        let mltiData = {};
                         if (file) {
                             let maltipleImage = [];
                             for (var otherImg of file.maltipleImage) {
                                 maltipleImage.push(otherImg.path)
                             }
+                            if (file.video) {
+                                mltiData.video = file.video[0].path || null
+                            } if (file.document) {
+                                mltiData.document = file.document[0].path || null
+                            }
                             newProperty = new propertyModel(
                                 {
                                     ...data,
                                     mainImage: file.mainImage[0].path,
-                                    maltipleImage: maltipleImage
+                                    maltipleImage: maltipleImage,
+                                    ...mltiData
                                 }
                             )
 
@@ -238,6 +243,11 @@ class propertyController {
                     let maltipleImage = file.maltipleImage.map(img => img.path);
                     updateData.maltipleImage = [...(existingProperty.maltipleImage || []), ...maltipleImage];
                 }
+                if (file.video) {
+                    updateData.video = file.video[0].path
+                } if (file.document) {
+                    updateData.document = file.document[0].path
+                }
             }
             await propertyModel.updateOne({ _id: id }, { $set: updateData });
 
@@ -316,17 +326,12 @@ class propertyController {
                             if (data.num == 0) {
                                 updateProperty.action = 'rejected'
                             }
-                            if (data.num == 'available') {
-                                updateProperty.status = 'available'
+
+                            if (['available', 'sold', 'soon', 'rentedBooked'].includes(data.num)) {
+                                updateProperty.status = data.num;
                             }
-                            if (data.num == 'sold') {
-                                updateProperty.status = 'sold'
-                            }
-                            if (data.num == 'soon') {
-                                updateProperty.status = 'soon'
-                            }
-                            if (data.num == 'popular') {
-                                updateProperty.status = 'popular'
+                            if (['featured', 'discount', 'popular'].includes(data.num)) {
+                                updateProperty.tag = data.num;
                             }
                             await propertyModel.updateOne(
                                 {
@@ -337,14 +342,14 @@ class propertyController {
                             ).then(
                                 () => {
                                     resolve({
-                                        msg: `status change`,
+                                        msg: `save`,
                                         status: 1
                                     })
                                 }
                             ).catch(
                                 () => {
                                     reject({
-                                        msg: 'status not change',
+                                        msg: 'Not save',
                                         status: 0
                                     })
                                 }

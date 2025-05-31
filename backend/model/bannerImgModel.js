@@ -4,6 +4,11 @@ const BannerSchema = new mongoose.Schema({
     bannerImage: {
         type: String,
     },
+    banner_Category: {
+        type: String,
+        enum: ['home', 'jaipur', 'service', 'blog', 'contact'],
+        default: 'home'
+    },
     status: {
         type: Boolean,
         default: true

@@ -8,18 +8,19 @@ import { Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement
 } from 'chart.js';
+import Link from 'next/link';
 
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement);
 
 
 const AdminDashboard = () => {
-  const { propertyShow, readProperty, users, allUser, request, requestView, blog, viewBlog } = useContext(MainContext);
+  const { propertyShow, readProperty, totalProperty, users, allUser, request, requestView, blog, viewBlog } = useContext(MainContext);
   const [showCategory, setShowCategory] = useState(null)
   const [view, setView] = useState(5)
   const [agents, setAgents] = useState([])
   const [user, setUser] = useState([])
-  console.log(users);
+  const [filter, setFilter] = useState('')
 
   const totalChart = 100;
 
@@ -33,7 +34,7 @@ const AdminDashboard = () => {
     {
       name: 'Property',
       icon: <FaBuilding />,
-      total: `${readProperty?.length}`,
+      total: `${readProperty?.length || 0}`,
       bg: 'bg-green-400'
     },
     {
@@ -168,15 +169,16 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
-    propertyShow();
-  }, []);
-
-  useEffect(() => {
-    if (users) {
-      setAgents(users?.filter(data => data.role == 'agent'))
-      setUser(users?.filter(data => data.role == 'user'))
+    if (users && users.length > 0) {
+      setAgents(users.filter(data => data.role === 'agent'));
+      setUser(users.filter(data => data.role === 'user'));
     }
   }, [users]);
+
+  useEffect(() => {
+    propertyShow(filter);
+  }, [filter]);
+
 
   useEffect(() => {
     requestView();
@@ -234,17 +236,21 @@ const AdminDashboard = () => {
                 👤 Recently Added Users
               </h3>
               <div className="space-y-3">
-                {users?.slice(0, view).map((data, index) => (
+                {user?.slice(0, view).map((data, index) => (
                   <div key={index} className="flex justify-between text-sm border-b pb-2">
-                    <span>{data.name}</span>
+                    <div className="text-sm text-blue-600 font-semibold">{index + 1}.</div>
+                    <Link href={`/users/${data._id}`}> <span>{data.name}</span></Link>
+                    <span>{data.email}</span>
+                    <span>{data.location}</span>
                     <span className="text-gray-500">{new Date(data.createdAt).toLocaleDateString()}</span>
                   </div>
                 ))}
               </div>
             </div>
             {showCategory === 'User' && (
-              <div className="w-full flex justify-center">
-                <div className="w-[200px]">
+              <div className="mt-6 w-full flex justify-center">
+                <div className="w-[220px] bg-white p-4 rounded-xl shadow-md border border-gray-200">
+                  <h4 className="text-sm font-medium text-gray-600 text-center mb-2">User Stats</h4>
                   <Doughnut data={userData} options={singleOptions} />
                 </div>
               </div>
@@ -255,27 +261,83 @@ const AdminDashboard = () => {
         {/* Properties */}
         {(showCategory === null || showCategory === 'Property') && (
           <>
-            <div className="bg-white shadow-md rounded-md p-5 border-l-4 border-green-500">
-              <h3 className="text-lg font-semibold mb-4 text-green-600 flex items-center gap-2">
-                🏠 Recently Added Properties
-              </h3>
-              <div className="space-y-3">
+            <div className="bg-white rounded-md p-5  border-l-4 border-green-500">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-green-600 flex items-center gap-2">
+                  <span className="text-lg">🏠</span> Recently Added Properties
+                </h3>
+
+                {showCategory === 'Property' && (
+                  <select
+                    className="w-full md:w-48 px-3 py-2 border border-gray-300 text-sm rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    onChange={(e) => setFilter(e.target.value)}
+                  >
+                    <option value="">All</option>
+                    <optgroup label="Approval Status">
+                      <option value="pending">Pending</option>
+                      <option value="approved">Approved</option>
+                      <option value="rejected">Rejected</option>
+                    </optgroup>
+                    <optgroup label="Availability">
+                      <option value="available">Available</option>
+                      <option value="sold">Sold</option>
+                      <option value="soon">Coming Soon</option>
+                    </optgroup>
+                    <optgroup label="Property Type">
+                      <option value="buy">Buy</option>
+                      <option value="sell">Sell</option>
+                      <option value="rent">Rent</option>
+                    </optgroup>
+                  </select>
+                )}
+              </div>
+
+              <div className="divide-y divide-gray-100">
                 {readProperty?.slice(0, view).map((data, index) => (
-                  <div key={index} className="flex justify-between text-sm border-b pb-2">
-                    <span>{data.title}</span>
-                    <span className="text-gray-500">{new Date(data.createdAt).toLocaleDateString()}</span>
+                  <div
+                    key={index}
+                    className="flex justify-between text-sm border-b pb-2"
+                  >
+                    <div className="text-sm text-green-600 font-semibold">{index + 1}.</div>
+
+                    <div className="col-span-1">
+                      <p className="text-gray-800 font-medium truncate">{data.title}</p>
+                    </div>
+
+                    <div className="col-span-1">
+                      <p className="text-gray-700">{data.city}</p>
+                    </div>
+
+                    <div className="col-span-1">
+                      <span className="text-sm px-2 py-1 rounded bg-blue-100 text-blue-700 capitalize">
+                        {data.propertyType}
+                      </span>
+                    </div>
+
+                    <div className="col-span-1">
+                      <Link href={`/users/${data?.user?._id}`}><p className="text-gray-800 font-medium">{data?.user?.name || "N/A"}</p></Link>
+
+                    </div>
+
+                    <div className="text-xs text-gray-500 text-right">
+                      {new Date(data.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
+
                 ))}
               </div>
             </div>
+
             {showCategory === 'Property' && (
-              <div className="w-full flex justify-center">
-                <div className="w-[200px]">
+              <div className="mt-6 w-full flex justify-center">
+                <div className="w-[220px] bg-white p-4 rounded-xl shadow-md border border-gray-200">
+                  <h4 className="text-sm font-medium text-gray-600 text-center mb-2">Property Stats</h4>
                   <Doughnut data={propertyData} options={singleOptions} />
                 </div>
               </div>
             )}
           </>
+
         )}
 
         {/* Agents */}
@@ -285,19 +347,23 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold mb-4 text-pink-600 flex items-center gap-2">
                 🧑‍💼 Recently Added Agents
               </h3>
-              {/* <div className="space-y-3">
-              {Array.isArray(agents) &&
-                agents.slice(0, view).map((data, index) => (
-                  <div key={index} className="flex justify-between text-sm border-b pb-2">
-                    <span>{data.name}</span>
-                    <span className="text-gray-500">{new Date(data.createdAt).toLocaleDateString()}</span>
-                  </div>
-                ))}
-            </div> */}
+              <div className="space-y-3">
+                {Array.isArray(agents) &&
+                  agents.slice(0, view).map((data, index) => (
+                    <div key={index} className="flex justify-between text-sm border-b pb-2">
+                      <div className="text-sm text-pink-600 font-semibold">{index + 1}.</div>
+                      <Link href={`/users/${data._id}`}> <span>{data.name}</span></Link>
+                      <span>{data.email}</span>
+                      <span>{data.location}</span>
+                      <span className="text-gray-500">{new Date(data.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  ))}
+              </div>
             </div>
             {showCategory === 'Agent' && (
-              <div className="w-full flex justify-center">
-                <div className="w-[200px]">
+              <div className="mt-6 w-full flex justify-center">
+                <div className="w-[220px] bg-white p-4 rounded-xl shadow-md border border-gray-200">
+                  <h4 className="text-sm font-medium text-gray-600 text-center mb-2">Property Stats</h4>
                   <Doughnut data={agentData} options={singleOptions} />
                 </div>
               </div>
@@ -322,8 +388,9 @@ const AdminDashboard = () => {
               </div>
             </div>
             {showCategory === 'Request' && (
-              <div className="w-full flex justify-center">
-                <div className="w-[200px]">
+              <div className="mt-6 w-full flex justify-center">
+                <div className="w-[220px] bg-white p-4 rounded-xl shadow-md border border-gray-200">
+                  <h4 className="text-sm font-medium text-gray-600 text-center mb-2">Property Stats</h4>
                   <Doughnut data={reqData} options={singleOptions} />
                 </div>
               </div>

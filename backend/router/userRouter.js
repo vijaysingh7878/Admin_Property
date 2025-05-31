@@ -54,6 +54,7 @@ userRouter.put('/status-change', async (req, res) => {
         }
     )
 })
+
 // remove-profile part
 userRouter.put('/remove-profile', async (req, res) => {
     const result = new userController().removeProfileUser(req.query).then(
@@ -153,6 +154,19 @@ userRouter.post('/password', async (req, res) => {
 //  admin Login part
 userRouter.post('/adminLogin', async (req, res) => {
     const result = new userController().adminLogin(req.body).then(
+        (success) => {
+            res.send(success);
+        }
+    ).catch(
+        (error) => {
+            res.send(error);
+        }
+    )
+})
+
+//  user role part
+userRouter.patch('/:id/role', async (req, res) => {    
+    const result = new userController().roleChange(req.params.id, req.body).then(
         (success) => {
             res.send(success);
         }

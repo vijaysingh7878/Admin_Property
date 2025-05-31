@@ -27,6 +27,10 @@ const contactSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    seen: {
+        type: Boolean,
+        default: false,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
