@@ -382,6 +382,9 @@ const AdminDashboard = () => {
                 {request?.slice(0, view).map((data, index) => (
                   <div key={index} className="flex justify-between text-sm border-b pb-2">
                     <span>{data.user?.name}</span>
+                    <span>{data.user?.phone}</span>
+                    <span>{data.property?.title}</span>
+                    <span> {data.propertyOwner?.name}</span>
                     <span className="text-gray-500">{new Date(data.createdAt).toLocaleDateString()}</span>
                   </div>
                 ))}
